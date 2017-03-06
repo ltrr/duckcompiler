@@ -1,3 +1,3 @@
 ducklex: duck.lex
-	lex -oducklex.c duck.lex
+	lex -o ducklex.c duck.lex
 	gcc -o ducklex ducklex.c
