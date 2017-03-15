@@ -3,17 +3,21 @@
 %{
 #include <stdio.h>
 
-int line = 1;
-int column = 1;
+int line = 1;	// A linha do caractere corrente
+int column = 1;	// A coluna do caractere corrente
 
-void advance() {
+void advance()
+// Adiciona o tamanho da string lida ao contador de coluna
+{
 	column += yyleng;
 }
 
-void white_advance() {
+void white_advance()
+// Avança o cursor baseado no conteúdo dele
+{
 	char *end = yytext + yyleng;
-	for (char* c = yytext; c != end; c++) {
-		if (*c == '\n') {
+	for (char* c = yytext; c != end; c++) {	// Avança caractere por caractere da linha
+		if (*c == '\n') {	// Verifica final da linha
 			line += 1;
 			column = 1;
 		}
@@ -27,12 +31,13 @@ void white_advance() {
 
 %%
 		/*** seção de regras ***/
-
+// Comentário
 (\/\/)(.*)[\n] {
     printf("Comentário: %s\n", yytext);
     advance();
 }
 
+// Palavras-chave
 "import" {
 	printf("IMPORT\n");
 	advance();
@@ -63,16 +68,6 @@ void white_advance() {
 	advance();
 }
 
-"(" {
-	printf(" ( \n");
-	advance();
-}
-
-")" {
-	printf(" ) \n");
-	advance();
-}
-
 "if" {
 	printf("IF\n");
 	advance();
@@ -90,11 +85,6 @@ void white_advance() {
 
 "for" {
 	printf("FOR\n");
-	advance();
-}
-
-"=" {
-	printf(" = \n");
 	advance();
 }
 
@@ -123,21 +113,6 @@ void white_advance() {
 	advance();
 }
 
-"." {
-	printf(" . \n");
-	advance();
-}
-
-"[" {
-	printf(" [ \n");
-	advance();
-}
-
-"]" {
-	printf(" ] \n");
-	advance();
-}
-
 "and" {
 	printf("AND\n");
 	advance();
@@ -150,6 +125,37 @@ void white_advance() {
 
 "not" {
 	printf("NOT\n");
+	advance();
+}
+
+// Símbolos especiais
+"(" {
+	printf(" ( \n");
+	advance();
+}
+
+")" {
+	printf(" ) \n");
+	advance();
+}
+
+"=" {
+	printf(" = \n");
+	advance();
+}
+
+"." {
+	printf(" . \n");
+	advance();
+}
+
+"[" {
+	printf(" [ \n");
+	advance();
+}
+
+"]" {
+	printf(" ] \n");
 	advance();
 }
 
@@ -218,6 +224,13 @@ void white_advance() {
 	advance();
 }
 
+// Literais
+
+"nill" {
+	printf("NILL\n");
+	advance();
+}
+
 "true" {
 	printf("TRUE\n");
 	advance();
@@ -225,12 +238,6 @@ void white_advance() {
 
 "false" {
 	printf("FALSE\n");
-	advance();
-}
-
-[a-zA-Z_][a-zA-Z0-9_]* {
-	/* yytext é a cadeia contendo o texto casado. */
-	printf("Identificador: %s\n", yytext);
 	advance();
 }
 
@@ -249,9 +256,17 @@ void white_advance() {
 	white_advance();
 }
 
+// Caracteres brancos
 [ \t\v\n\f]*	{ 
 	//printf("Whitespace\n");
 	white_advance();
+}
+
+// Identificadores
+[a-zA-Z_][a-zA-Z0-9_]* {
+	/* yytext é a cadeia contendo o texto casado. */
+	printf("Identificador: %s\n", yytext);
+	advance();
 }
 
 <<EOF>>	{
