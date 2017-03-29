@@ -1,0 +1,119 @@
+; http://hackingoff.com/compilers/predict-first-follow-set
+<program> -> <stmtlist>
+
+<stmtlist> -> <stmt> <stmtlist>
+<stmtlist> -> EPSILON
+
+<stmt> -> import <identifier> <endl>
+<stmt> -> <endl>
+<stmt> -> <expr> <endl>
+<stmt> -> <assignment> <endl>
+<stmt> -> <functiondef> <endl>
+<stmt> -> <if> <endl>
+<stmt> -> <forloop> <endl>
+<stmt> -> <whileloop> <endl>
+<stmt> -> <indefiniteloop> <endl>
+<stmt> -> return <expr> <endl>
+<stmt> -> break <endl>
+<stmt> -> continue <endl>
+
+<functiondef> -> function <identifier> <parameters> <endl> <stmtlist> end
+
+<parameters> -> EPSILON
+<parameters> -> ( )
+<parameters> -> ( <paramdecl> )
+
+<paramdecl> -> <identifier> <paramdecl'>
+<paramdecl'> -> , <identfier> <paramdecl'>
+<paramdecl'> -> EPSILON 
+
+<if> -> if <condition> then <endl> <stmtlist> <elseif1>
+<elseif1> -> else <elseif2>
+<elseif1> -> end
+<elseif2> -> <endl> <stmtlist> end
+<elseif2> -> <if>
+
+<forloop> -> for <identifier> = <arithmetic> to <arithmetic> do <endl> <stmtlist> loop
+
+<whileloop> -> while <condition> do <endl> <stmtlist> loop
+
+<indefiniteloop> -> iterate <endl> <stmtlist> loop
+
+<assignment> -> <l-value> = <condition>
+
+<expr> -> <condition>
+
+<condition> -> <logic> <condition'>
+<condition'> -> and <logic> <condition'>
+<condition'> -> or <logic> <condition'>
+<condition'> -> EPSILON
+
+<logic> -> not <comparison>
+<logic> -> <comparison>
+
+<comparison> -> <arithmetic> <comparison'>
+<comparison'> -> == <arithmetic> <comparison'>
+<comparison'> -> != <arithmetic> <comparison'>
+<comparison'> -> \< <arithmetic> <comparison'>
+<comparison'> -> > <arithmetic> <comparison'>
+<comparison'> -> \<= <arithmetic> <comparison'>
+<comparison'> -> >= <arithmetic> <comparison'>
+<comparison'> -> EPSILON
+; como corrigir associatividade?
+
+<arithmetic> -> <term> <arithmetic'>
+<arithmetic'> -> + <term> <arithmetic'>
+<arithmetic'> -> - <term> <arithmetic'>
+<arithmetic'> -> EPSILON
+
+<term> -> <factor> <term'>
+<term'> -> * <factor> <term'>
+<term'> -> / <factor> <term'>
+<term'> -> EPSILON
+
+<factor> -> - <factor>
+<factor> -> ! <factor>
+<factor> -> <final>
+
+<final> -> ( <expr> )
+<final> -> <boolean>
+<final> -> <integer>
+<final> -> <float>
+<final> -> <string>
+<final> -> <object>
+<final> -> <reference>
+<final> -> <nill>
+
+<l-value> -> <identifier> <l-value'>
+<l-value> -> ( <l-value> ) <l-value'>
+<l-value'> -> EPSILON
+<l-value'> -> <reference'> <l-value2> <l-value'>
+<l-value2> -> . <identifier> 
+<l-value2> -> [ <expr> ] 
+
+<reference> -> <l-value> <reference'>
+<reference'> -> EPSILON
+<reference'> -> ( <reference2>
+<reference2> -> ) <reference'>
+<reference2> -> <arguments> ) <reference'>
+
+<arguments> -> <expr> <arguments'>
+<arguments'> -> EPSILON
+<arguments'> -> , <expr> <arguments'>
+
+<object> -> [ <object'>
+<object'> -> ]
+<object'> -> <arrayinit> ]
+<object'> -> <dictionaryinit> ]
+
+<arrayinit> -> <expr> <arrayinit'>
+<arrayinit'> -> EPSILON
+<arrayinit'> -> , <expr> <arrayinit'>
+
+<dictionaryinit> -> <identifier> : <expr> <dictionaryinit'>
+<dictionaryinit'> -> EPSILON
+<dictionaryinit'> -> , <identifier> : <expr> <dictionaryinit'>
+
+<boolean> -> true
+<boolean> -> false
+
