@@ -6,7 +6,6 @@
 
 <stmt> -> import <identifier> <endl>
 <stmt> -> <endl>
-<stmt> -> <expr> <endl>
 <stmt> -> <assignment> <endl>
 <stmt> -> <functiondef> <endl>
 <stmt> -> <if> <endl>
@@ -24,7 +23,7 @@
 <parameters> -> ( <paramdecl> )
 
 <paramdecl> -> <identifier> <paramdecl'>
-<paramdecl'> -> , <identfier> <paramdecl'>
+<paramdecl'> -> , <identifier> <paramdecl'>
 <paramdecl'> -> EPSILON 
 
 <if> -> if <condition> then <endl> <stmtlist> <elseif1>
@@ -102,9 +101,9 @@
 <arguments'> -> , <expr> <arguments'>
 
 <object> -> [ <object'>
+<object> -> { <dictionaryinit> }
 <object'> -> ]
 <object'> -> <arrayinit> ]
-<object'> -> <dictionaryinit> ]
 
 <arrayinit> -> <expr> <arrayinit'>
 <arrayinit'> -> EPSILON
