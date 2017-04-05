@@ -18,9 +18,9 @@
 
 <functiondef> -> function <identifier> <parameters> <endl> <stmtlist> end
 
-<parameters> -> EPSILON
-<parameters> -> ( )
-<parameters> -> ( <paramdecl> )
+<parameters> -> ( <parameters'>
+<parameters'> -> )
+<parameters'> -> <paramdecl> )
 
 <paramdecl> -> <identifier> <paramdecl'>
 <paramdecl'> -> , <identifier> <paramdecl'>
@@ -58,7 +58,6 @@
 <comparison'> -> \<= <arithmetic> <comparison'>
 <comparison'> -> >= <arithmetic> <comparison'>
 <comparison'> -> EPSILON
-; como corrigir associatividade?
 
 <arithmetic> -> <term> <arithmetic'>
 <arithmetic'> -> + <term> <arithmetic'>
@@ -83,12 +82,10 @@
 <final> -> <reference>
 <final> -> <nill>
 
-<l-value> -> <identifier> <l-value'>
-<l-value> -> ( <l-value> ) <l-value'>
-<l-value'> -> EPSILON
-<l-value'> -> <reference'> <l-value2> <l-value'>
-<l-value2> -> . <identifier> 
-<l-value2> -> [ <expr> ] 
+<l-value> -> <identifier> <l-value1>
+<l-value1> -> EPSILON
+<l-value1> -> . <identifier> <l-value1>
+<l-value1> -> [ <expr> ] <l-value1>
 
 <reference> -> <l-value> <reference'>
 <reference'> -> EPSILON
