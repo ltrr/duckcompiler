@@ -41,187 +41,236 @@ void white_advance()
 "import" {
 	printf("IMPORT\n");
 	advance();
+	return(T_IMPORT);
 }
 
 "return" {
 	printf("RETURN\n");
 	advance();
+	return(T_RETURN);
 }
 
 "break" {
 	printf("BREAK\n");
 	advance();
+	return(T_BREAK);
 }
 
 "continue" {
 	printf("CONTINUE\n");
 	advance();
+	return(T_CONTINUE);
 }
 
 "function" {
 	printf("FUNCTION\n");
 	advance();
+	return(T_FUNCTION);
 }
 
 "end" {
 	printf("END\n");
 	advance();
+	return(T_END);
 }
 
 "if" {
 	printf("IF\n");
 	advance();
+	return(T_IF);
 }
 
 "then" {
 	printf("THEN\n");
 	advance();
+	return(T_THEN);
 }
 
 "else" {
 	printf("ELSE\n");
 	advance();
+	return(T_ELSE);
 }
 
 "for" {
 	printf("FOR\n");
 	advance();
+	return(T_FOR);
 }
 
 "to" {
 	printf("TO\n");
 	advance();
+	return(T_TO);
 }
 
 "loop" {
 	printf("LOOP\n");
 	advance();
+	return(T_LOOP);
 }
 
 "while" {
 	printf("WHILE\n");
 	advance();
+	return(T_WHILE);
 }
 
 "do" {
 	printf("DO\n");
 	advance();
+	return(T_DO);
 }
 
 "iterate" {
 	printf("ITERATE\n");
 	advance();
+	return(T_ITERATE);
 }
 
 "and" {
 	printf("AND\n");
 	advance();
+	return(T_AND);
 }
 
 "or" {
 	printf("OR\n");
 	advance();
+	return(T_OR);
 }
 
 "not" {
 	printf("NOT\n");
 	advance();
+	return(T_NOT);
 }
 
 // Símbolos especiais
 "(" {
 	printf(" ( \n");
 	advance();
+	return(T_LPARENS);
 }
 
 ")" {
 	printf(" ) \n");
 	advance();
+	return(T_RPARENS);
 }
 
 "=" {
 	printf(" = \n");
 	advance();
+	return(T_ASSIGN);
 }
 
 "." {
 	printf(" . \n");
 	advance();
+	return(T_DOT);
+}
+
+"{" {
+	printf(" { \n");
+	advance();
+	return(T_LBRACES);
+}
+
+"}" {
+	printf(" } \n");
+	advance();
+	return(T_RBRACES);
 }
 
 "[" {
 	printf(" [ \n");
 	advance();
+	return(T_LBRACKET);
 }
 
 "]" {
 	printf(" ] \n");
 	advance();
+	return(T_RBRACKET);
 }
 
 "==" {
 	printf(" == \n");
 	advance();
+	return(T_EQ);
 }
 
 "!=" {
 	printf(" != \n");
 	advance();
+	return(T_NEQ);
 }
 
 "<" {
 	printf(" < \n");
 	advance();
+	return(T_LT);
 }
 
 ">" {
 	printf(" > \n");
 	advance();
+	return(T_GT);
 }
 
 "<=" {
 	printf(" <= \n");
 	advance();
+	return(T_LE);	// "Less or equal"
 }
 
 ">=" {
 	printf(" >= \n");
 	advance();
+	return(T_GE);	// "Greater or equal"
 }
 
 "+" {
 	printf(" + \n");
 	advance();
+	return(T_PLUS);
 }
 
 "-" {
 	printf(" - \n");
 	advance();
+	return(T_MINUS);
 }
 
 "*" {
 	printf(" * \n");
 	advance();
+	return(T_TIMES);
 }
 
 "/" {
 	printf(" / \n");
 	advance();
+	return(T_DIV);
 }
 
 "!" {
 	printf(" ! \n");
 	advance();
+	return(T_NEG);
 }
 
 "," {
 	printf(" , \n");
 	advance();
+	return(T_COMMA);
 }
 
 ":" {
 	printf(" : \n");
 	advance();
+	return(T_COLON);
 }
 
 // Literais
@@ -229,31 +278,37 @@ void white_advance()
 "nill" {
 	printf("NILL\n");
 	advance();
+	return(NILL);
 }
 
 "true" {
 	printf("TRUE\n");
 	advance();
+	return(VERDADEIRO);
 }
 
 "false" {
 	printf("FALSE\n");
 	advance();
+	return(FALSO);
 }
 
 [+-]?[0-9]+ {
 	printf("Inteiro: %s\n", yytext);
 	advance();
+	return(INTEIRO);
 }
 
 [+-]?[0-9]+[\.][0-9]* {
 	printf("Float: %s\n", yytext);
 	advance();
+	return(FLOAT);
 }
 
 (\"[^\"\n]*\")|(\'[^\'\n]*\') {
 	printf("String: %s\n", yytext);
-	white_advance();
+	advance();
+	return(STRING);
 }
 
 // Caracteres brancos
@@ -267,17 +322,19 @@ void white_advance()
 	/* yytext é a cadeia contendo o texto casado. */
 	printf("Identificador: %s\n", yytext);
 	advance();
+	return(IDENTIFICADOR);
 }
 
 <<EOF>>	{
 		printf("Fim do arquivo.\n");
-		return 0;
+		return(T_EOF);
 	}
 
 . {
 	printf("Erro: %s\n", yytext);
 	printf("Linha %d, coluna %d\n", line, column);
 	advance();
+	return(ERRO);
 }
 
 %%
