@@ -30,14 +30,11 @@ void white_advance()
 %}
 
 %%
-		/*** seção de regras ***/
-// Comentário
 (\/\/)(.*)[\n] {
     printf("Comentário: %s\n", yytext);
     advance();
 }
 
-// Palavras-chave
 "import" {
 	printf("IMPORT\n");
 	advance();
@@ -128,7 +125,6 @@ void white_advance()
 	advance();
 }
 
-// Símbolos especiais
 "(" {
 	printf(" ( \n");
 	advance();
@@ -224,8 +220,6 @@ void white_advance()
 	advance();
 }
 
-// Literais
-
 "nill" {
 	printf("NILL\n");
 	advance();
@@ -256,13 +250,11 @@ void white_advance()
 	white_advance();
 }
 
-// Caracteres brancos
 [ \t\v\n\f]*	{ 
 	//printf("Whitespace\n");
 	white_advance();
 }
 
-// Identificadores
 [a-zA-Z_][a-zA-Z0-9_]* {
 	/* yytext é a cadeia contendo o texto casado. */
 	printf("Identificador: %s\n", yytext);
