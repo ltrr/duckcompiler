@@ -278,37 +278,37 @@ void white_advance()
 "nill" {
 	printf("NILL\n");
 	advance();
-	return(NILL);
+	return(T_NILL);
 }
 
 "true" {
 	printf("TRUE\n");
 	advance();
-	return(VERDADEIRO);
+	return(T_TRUE);
 }
 
 "false" {
 	printf("FALSE\n");
 	advance();
-	return(FALSO);
+	return(T_FALSE);
 }
 
 [+-]?[0-9]+ {
 	printf("Inteiro: %s\n", yytext);
 	advance();
-	return(INTEIRO);
+	return(T_INT);
 }
 
 [+-]?[0-9]+[\.][0-9]* {
 	printf("Float: %s\n", yytext);
 	advance();
-	return(FLOAT);
+	return(T_FLOAT);
 }
 
 (\"[^\"\n]*\")|(\'[^\'\n]*\') {
 	printf("String: %s\n", yytext);
 	advance();
-	return(STRING);
+	return(T_STRING);
 }
 
 // Caracteres brancos
@@ -322,7 +322,7 @@ void white_advance()
 	/* yytext é a cadeia contendo o texto casado. */
 	printf("Identificador: %s\n", yytext);
 	advance();
-	return(IDENTIFICADOR);
+	return(T_ID);
 }
 
 <<EOF>>	{
