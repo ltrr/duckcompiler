@@ -3,7 +3,7 @@
 %{
 #include <cstdio>
 #include <vector>
-#include "tokens.h"
+#include "table.h"
 
 typedef std::pair<int, int> ii;
 

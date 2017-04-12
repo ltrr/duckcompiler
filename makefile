@@ -1,12 +1,17 @@
-ducklex: duck.lex
-	lex -o ducklex.c duck.lex
-	gcc -o ducklex ducklex.c
+lexparser: lexical/lexparser.lex
+	cd lexical; \
+	lex -o lexparser.c lexparser.lex; \
+	gcc -o ../lexparser lexparser.c
 
-ducktable: table.lex tokens.h 
-	lex -o tablelex.cpp table.lex
-	g++ -std=c++11 -o ducktable tablelex.cpp
 
-calctokens: rules.txt
-	./tablebuilder.py > tokens.h
+tableparser: topdown_table/tableparser.lex topdown_table/table.h
+	cd topdown_table; \
+	lex -o tableparser.cpp tableparser.lex; \
+	g++ -std=c++11 -o ../tableparser tableparser.cpp
+
+
+topdown_table/table.h: topdown_table/rules.txt
+	cd topdown_table; \
+	tablebuilder.py > table.h
 
 

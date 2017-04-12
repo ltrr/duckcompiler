@@ -1,4 +1,7 @@
+*.swp
 *.c
-ducklex
-ducktable
+lexparser
+tableparser
+lexical/lexparser.c
+topdown_table/tableparser.cpp
 

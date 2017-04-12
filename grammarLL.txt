@@ -1,4 +1,3 @@
-; http://hackingoff.com/compilers/predict-first-follow-set
 <program> -> <stmtlist>
 
 <stmtlist> -> <stmt> <stmtlist>
@@ -6,7 +5,7 @@
 
 <stmt> -> import <identifier> <endl>
 <stmt> -> <endl>
-<stmt> -> <assignment> <endl>
+<stmt> -> <l-value> <lvstmt> <endl>
 <stmt> -> <functiondef> <endl>
 <stmt> -> <if> <endl>
 <stmt> -> <forloop> <endl>
@@ -16,15 +15,22 @@
 <stmt> -> break <endl>
 <stmt> -> continue <endl>
 
+<lvstmt> -> <assignment>
+<lvstmt> -> <call>
+
+<call> -> ( <call1>
+<call1> -> )
+<call1> -> <arguments> )
+
 <functiondef> -> function <identifier> <parameters> <endl> <stmtlist> end
 
-<parameters> -> ( <parameters'>
-<parameters'> -> )
-<parameters'> -> <paramdecl> )
+<parameters> -> ( <parameters1>
+<parameters1> -> )
+<parameters1> -> <paramdecl> )
 
-<paramdecl> -> <identifier> <paramdecl'>
-<paramdecl'> -> , <identifier> <paramdecl'>
-<paramdecl'> -> EPSILON 
+<paramdecl> -> <identifier> <paramdecl1>
+<paramdecl1> -> , <identifier> <paramdecl1>
+<paramdecl1> -> EPSILON 
 
 <if> -> if <condition> then <endl> <stmtlist> <elseif1>
 <elseif1> -> else <elseif2>
@@ -38,36 +44,36 @@
 
 <indefiniteloop> -> iterate <endl> <stmtlist> loop
 
-<assignment> -> <l-value> = <condition>
+<assignment> -> = <condition>
 
 <expr> -> <condition>
 
-<condition> -> <logic> <condition'>
-<condition'> -> and <logic> <condition'>
-<condition'> -> or <logic> <condition'>
-<condition'> -> EPSILON
+<condition> -> <logic> <condition1>
+<condition1> -> and <logic> <condition1>
+<condition1> -> or <logic> <condition1>
+<condition1> -> EPSILON
 
 <logic> -> not <comparison>
 <logic> -> <comparison>
 
-<comparison> -> <arithmetic> <comparison'>
-<comparison'> -> == <arithmetic> <comparison'>
-<comparison'> -> != <arithmetic> <comparison'>
-<comparison'> -> \< <arithmetic> <comparison'>
-<comparison'> -> > <arithmetic> <comparison'>
-<comparison'> -> \<= <arithmetic> <comparison'>
-<comparison'> -> >= <arithmetic> <comparison'>
-<comparison'> -> EPSILON
+<comparison> -> <arithmetic> <comparison1>
+<comparison1> -> == <arithmetic> <comparison1>
+<comparison1> -> != <arithmetic> <comparison1>
+<comparison1> -> \< <arithmetic> <comparison1>
+<comparison1> -> > <arithmetic> <comparison1>
+<comparison1> -> \<= <arithmetic> <comparison1>
+<comparison1> -> >= <arithmetic> <comparison1>
+<comparison1> -> EPSILON
 
-<arithmetic> -> <term> <arithmetic'>
-<arithmetic'> -> + <term> <arithmetic'>
-<arithmetic'> -> - <term> <arithmetic'>
-<arithmetic'> -> EPSILON
+<arithmetic> -> <term> <arithmetic1>
+<arithmetic1> -> + <term> <arithmetic1>
+<arithmetic1> -> - <term> <arithmetic1>
+<arithmetic1> -> EPSILON
 
-<term> -> <factor> <term'>
-<term'> -> * <factor> <term'>
-<term'> -> / <factor> <term'>
-<term'> -> EPSILON
+<term> -> <factor> <term1>
+<term1> -> * <factor> <term1>
+<term1> -> / <factor> <term1>
+<term1> -> EPSILON
 
 <factor> -> - <factor>
 <factor> -> ! <factor>
@@ -87,28 +93,28 @@
 <l-value1> -> . <identifier> <l-value1>
 <l-value1> -> [ <expr> ] <l-value1>
 
-<reference> -> <l-value> <reference'>
-<reference'> -> EPSILON
-<reference'> -> ( <reference2>
-<reference2> -> ) <reference'>
-<reference2> -> <arguments> ) <reference'>
+<reference> -> <l-value> <reference1>
+<reference1> -> EPSILON
+<reference1> -> ( <reference2>
+<reference2> -> ) <reference1>
+<reference2> -> <arguments> ) <reference1>
 
-<arguments> -> <expr> <arguments'>
-<arguments'> -> EPSILON
-<arguments'> -> , <expr> <arguments'>
+<arguments> -> <expr> <arguments1>
+<arguments1> -> EPSILON
+<arguments1> -> , <expr> <arguments1>
 
-<object> -> [ <object'>
+<object> -> [ <object1>
 <object> -> { <dictionaryinit> }
-<object'> -> ]
-<object'> -> <arrayinit> ]
+<object1> -> ]
+<object1> -> <arrayinit> ]
 
-<arrayinit> -> <expr> <arrayinit'>
-<arrayinit'> -> EPSILON
-<arrayinit'> -> , <expr> <arrayinit'>
+<arrayinit> -> <expr> <arrayinit1>
+<arrayinit1> -> EPSILON
+<arrayinit1> -> , <expr> <arrayinit1>
 
-<dictionaryinit> -> <identifier> : <expr> <dictionaryinit'>
-<dictionaryinit'> -> EPSILON
-<dictionaryinit'> -> , <identifier> : <expr> <dictionaryinit'>
+<dictionaryinit> -> <identifier> : <expr> <dictionaryinit1>
+<dictionaryinit1> -> EPSILON
+<dictionaryinit1> -> , <identifier> : <expr> <dictionaryinit1>
 
 <boolean> -> true
 <boolean> -> false
