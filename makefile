@@ -6,3 +6,7 @@ ducktable: table.lex tokens.h
 	lex -o tablelex.cpp table.lex
 	g++ -std=c++11 -o ducktable tablelex.cpp
 
+calctokens: rules.txt
+	./tablebuilder.py > tokens.h
+
+
