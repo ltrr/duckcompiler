@@ -500,7 +500,11 @@ void PARAMETERS(){
 	level--;
 }
 
-void PARAMETERS1(){}
+void PARAMETERS1(){
+	level++;
+	level--;
+}
+
 void ARGUMENTS(){}
 void IDENTIFIER(){}
 void ASSIGNMENT(){}
