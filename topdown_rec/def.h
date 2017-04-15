@@ -16,6 +16,7 @@ void WHILELOOP();
 void INDEFINITELOOP();
 void EXPR();
 void PARAMETERS();
+void PARAMETERS1();
 void PARAMETERS_();
 void PARAMDECL();
 void PARAMDECL_();

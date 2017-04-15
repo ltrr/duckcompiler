@@ -489,7 +489,18 @@ void FUNCTIONDEF(){
 	level--;
 }
 
-void PARAMETERS(){}
+void PARAMETERS(){
+	level++;
+	if(tok == T_LPARENS){
+		match(T_LPARENS);
+		PARAMETERS1();
+	} else {
+		printerror();
+	}
+	level--;
+}
+
+void PARAMETERS1(){}
 void ARGUMENTS(){}
 void IDENTIFIER(){}
 void ASSIGNMENT(){}
