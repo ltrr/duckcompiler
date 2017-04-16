@@ -382,9 +382,9 @@ void PROGRAM(){
 void STMTLIST(){
 	level++;
     printlvl("STMTLIST");
-    if(inside(tok, {T_EOF, T_LOOP, T_END, T_ELSE})){	// epsilon ??
-    	match(tok);
-    } else if(inside(tok, {T_IMPORT,T_ENDL,T_RETURN,T_BREAK,T_CONTINUE,T_ID,T_IF, 						T_WHILE,T_FUNCTION,T_ITERATE,T_FOR})) {
+    if(inside(tok,{T_LOOP,T_END,T_ELSE})){	// epsilon
+    	// Para não cair no caso de erro
+    } else if(inside(tok, {T_IMPORT, T_ENDL, T_RETURN, T_BREAK, T_CONTINUE, T_ID, T_IF, T_WHILE, T_FUNCTION, T_ITERATE, T_FOR})) {
 		STMT();
 		STMTLIST();
     } else {	// Error
@@ -465,7 +465,7 @@ void CALL1(){
 	level++;
 	if(tok == T_RPARENS){
 		match(T_RPARENS);
-	} else if(inside(tok,{T_NOT,T_MINUS,T_NEG,T_LPARENS,T_INT,T_FLOAT,T_STRING,T_NILL, 						T_TRUE,T_FALSE,T_LBRACKET,T_LBRACES,T_ID})){
+	} else if(inside(tok,{T_NOT, T_MINUS, T_NEG, T_LPARENS, T_INT, T_FLOAT, T_STRING, T_NILL, T_TRUE, T_FALSE, T_LBRACKET, T_LBRACES, T_ID})){
 		ARGUMENTS();
 		match(T_RPARENS);
 	} else {
