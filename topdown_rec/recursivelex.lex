@@ -12,6 +12,7 @@ int line = 1;	// A linha do caractere corrente
 int column = 1;	// A coluna do caractere corrente
 int level = 0;
 int tok;
+bool p_error = true;
 
 void printlvl(char* nt){
 	for(int i = 0; i < level; i++)
@@ -360,15 +361,19 @@ int main(void)
     return 0;
 }
 int yywrap(){ return 1; }
+
 void match(int symbol){
 	if(symbol == tok){
 		level++;
 		printlvl(yytext);
 		level--;
 		tok = yylex();
-	} else {
+	} else if(perror) {
 		printerror();
+		p_error = false;
 	}
+	if(symbol == T_ENDL && !p_error)
+		p_error = true;
 }
 
 // ----- Seção de código das funções de recursão do analisador
@@ -380,7 +385,7 @@ void PROGRAM(){
 }
 
 void STMTLIST(){
-	level++;
+    level++;
     printlvl("STMTLIST");
     if(inside(tok,{T_LOOP,T_END,T_ELSE})){	// epsilon
     	// Para não cair no caso de erro
@@ -452,6 +457,7 @@ void LVSTMT(){
 
 void CALL(){
 	level++;
+	printlvl("CALL");
 	if(tok == T_LPARENS){
 		match(T_LPARENS);
 		CALL1();
@@ -463,6 +469,7 @@ void CALL(){
 
 void CALL1(){
 	level++;
+	printlvl("CALL1");
 	if(tok == T_RPARENS){
 		match(T_RPARENS);
 	} else if(inside(tok,{T_NOT, T_MINUS, T_NEG, T_LPARENS, T_INT, T_FLOAT, T_STRING, T_NILL, T_TRUE, T_FALSE, T_LBRACKET, T_LBRACES, T_ID})){
@@ -476,6 +483,7 @@ void CALL1(){
 
 void FUNCTIONDEF(){
 	level++;
+	printlvl("FUNCTIONDEF");
 	if(tok == T_FUNCTION){
 		match(T_FUNCTION);
 		match(T_ID);
@@ -491,6 +499,7 @@ void FUNCTIONDEF(){
 
 void PARAMETERS(){
 	level++;
+	printlvl("PARAMETERS");
 	if(tok == T_LPARENS){
 		match(T_LPARENS);
 		PARAMETERS1();
@@ -502,32 +511,322 @@ void PARAMETERS(){
 
 void PARAMETERS1(){
 	level++;
+	printlvl("PARAMETERS1");
+	if(tok == T_RPARENS){
+		match(T_RPARENS);
+	} else if(tok == T_ID){
+		PARAMDECL();
+		match(T_RPARENS);
+	} else {
+		printerror();
+	}
+	level--;
+}
+
+void PARAMDECL(){
+	level++;
+	printlvl("PARAMDECL");
+	if(tok == T_ID){
+		match(T_ID);
+		PARAMDECL1();
+	} else {
+		printerror();
+	}
+	level--;
+}
+
+void PARAMDECL1(){
+	level++;
+	printlvl("PARAMDECL1");
+	if(tok == T_COMMA){
+		match(T_COMMA);
+		match(T_ID);
+		PARAMDECL1();
+	} else if(tok == T_RPARENS){
+		// epsilon
+	} else {
+		printerror();
+	}
+	level--;
+}
+
+void IF(){
+	level++;
+	printlvl("IF");
+	if(tok == T_IF){
+		match(T_IF);
+		CONDITION();
+		match(T_THEN);
+		match(T_ENDL);
+		STMTLIST();
+		ELSEIF1();
+	} else {
+		printerror();
+	}
+	level--;
+}
+
+void ELSEIF1(){
+	level++;
+	printlvl("ELSEIF1");
+	if(tok == T_ELSE){
+		match(T_ELSE);
+		ELSEIF2();
+	} else if(tok == T_END){
+		match(T_END);
+	} else {
+		printerror();
+	}
+	level--;
+}
+
+void ELSEIF2(){
+	level++;
+	printlvl("ELSEIF2");
+	if(tok == T_ENDL){
+		match(T_ENDL);
+		STMTLIST();
+		match(T_END);
+	} else if(tok == T_IF){
+		IF();		
+	} else {
+		printerror();
+	}
+	level--;
+}
+
+void FORLOOP(){
+	level++;
+	printlvl("FORLOOP");
+	if(tok == T_FOR){
+		match(T_FOR);
+		match(T_ID);
+		match(T_ASSIGN);
+		ARITHMETIC();
+		match(T_TO);
+		ARITHMETIC();
+		match(T_DO);
+		match(T_ENDL);
+		STMTLIST();
+		match(T_LOOP);
+	} else {
+		printerror();
+	}
+	level--;
+}
+
+void WHILELOOP(){
+	level++;
+	printlvl("WHILELOOP");
+	if(tok == T_WHILE){
+		match(T_WHILE);
+		CONDITION();
+		match(T_DO);
+		match(T_ENDL);
+		STMTLIST();
+		match(T_LOOP);
+	} else {
+		printerror();
+	}
+	level--;
+}
+
+void INDEFINITELOOP(){
+	level++;
+	printlvl("INDEFINITELOOP");
+	if(tok == T_ITERATE){
+		match(T_ITERATE);
+		match(T_ENDL);
+		STMTLIST();
+		match(T_LOOP);
+	} else {
+		printerror();
+	}
+	level--;
+}
+
+void ASSIGNMENT(){
+	level++;
+	printlvl("ASSIGNMENT");
+	if(tok == T_ASSIGN){
+		match(T_ASSIGN);
+		CONDITION();
+	} else {
+		printerror();
+	}
+	level--;
+}
+
+void EXPR(){
+	level++;
+	printlvl("EXPR");
+	if(inside(tok,{T_NOT, T_MINUS, T_NEG, T_LPARENS, T_INT, T_FLOAT, T_STRING, T_NILL, T_TRUE, T_FALSE, T_LBRACKET, T_LBRACES, T_ID})){
+		CONDITION();
+	} else {
+		printerror();
+	}
+	level--;
+}
+
+void CONDITION(){
+	level++;
+	printlvl("CONDITION");
+	if(inside(tok,{T_NOT, T_MINUS, T_NEG, T_LPARENS, T_INT, T_FLOAT, T_STRING, T_NILL, T_TRUE, T_FALSE, T_LBRACKET, T_LBRACES, T_ID})){
+		LOGIC();
+		CONDITION1();
+	} else {
+		printerror();
+	}
+	level--;
+}
+
+void CONDITION1(){
+	level++;
+	printlvl("CONDITION1");
+	if(tok == T_AND){
+		match(T_AND);
+		LOGIC();
+		CONDITION1();
+	} else if(tok == T_OR){
+		match(T_OR);
+		LOGIC();
+		CONDITION1();
+	} else if(inside(tok,{T_DO, T_THEN, T_COMMA, T_RBRACKET, T_RPARENS, T_ENDL, T_RBRACES})){
+		// epsilon
+	} else {
+		printerror();
+	}
+	level--;
+}
+
+void LOGIC(){
+	level++;
+	printlvl("LOGIC");
+	if(tok == T_NOT){
+		match(T_NOT);
+		COMPARISON();
+	} else if(inside(tok,{T_MINUS, T_NEG, T_LPARENS, T_INT, T_FLOAT, T_STRING, T_NILL, T_TRUE, T_FALSE, T_LBRACKET, T_LBRACES, T_ID})){
+		COMPARISON();
+	} else {
+		printerror();
+	}
+	level--;
+}
+
+void COMPARISON(){
+	level++;
+	printlvl("COMPARISON");
+	if(inside(tok,{T_MINUS, T_NEG, T_LPARENS, T_INT, T_FLOAT, T_STRING, T_NILL, T_TRUE, T_FALSE, T_LBRACKET, T_LBRACES, T_ID})){
+		ARITHMETIC();
+		COMPARISON1();
+	} else {
+		printerror();
+	}
+	level--;
+}
+
+void COMPARISON1(){
+	level++;
+	printlvl("COMPARISON1");
+	if(tok == T_EQ){
+		match(T_EQ);
+		ARITHMETIC();
+		COMPARISON1();
+	} else if(tok == T_NEQ){
+		match(T_NEQ);
+		ARITHMETIC();
+		COMPARISON1();
+	} else if(tok == T_LT){
+		match(T_LT);
+		ARITHMETIC();
+		COMPARISON1();
+	} else if(tok == T_GT){
+		match(T_GT);
+		ARITHMETIC();
+		COMPARISON1();
+	} else if(tok == T_LE){
+		match(T_LE);
+		ARITHMETIC();
+		COMPARISON1();
+	} else if(tok == T_GE){
+		match(T_GE);
+		ARITHMETIC();
+		COMPARISON1();
+	} else if(inside(tok,{T_AND, T_OR, T_DO, T_THEN, T_COMMA, T_RBRACKET, T_RPARENS, T_ENDL, T_RBRACES})){
+		// epsilon
+	} else {
+		printerror();
+	}
+	level--;
+}
+
+void ARITHMETIC(){
+	level++;
+	printlvl("ARITHMETIC");
+	if(inside(tok,{T_MINUS, T_NEG, T_LPARENS, T_INT, T_FLOAT, T_STRING, T_NILL, T_TRUE, T_FALSE, T_LBRACKET, T_LBRACES, T_ID})){
+	        TERM();
+		ARITHMETIC1();
+	} else {
+		printerror();
+	}
+	level--;
+}
+void ARITHMETIC1(){
+	level++;
+	printlvl("ARITHMETIC1");
+	if(tok == T_PLUS){
+		match(T_PLUS);
+		TERM();
+		ARITHMETIC1():
+	} else if (tok == T_MINUS){
+		match(T_MINUS);
+		TERM();
+		ARITHMETIC1():
+	} else if(inside(tok,{T_EQ, T_NEQ, T_LT, T_GT, T_LE, T_GE, T_TO, T_DO, T_AND, T_OR, T_THEN, T_COMMA, T_RBRACKET, T_RPARENS, T_ENDL, T_RBRACES})){
+		// epsilon
+	}else {
+		printerror();
+	}
+	level--;
+}
+
+void TERM(){
+	level++;
+	printlvl("TERM");
+	if(inside(tok,{T_MINUS, T_NEG, T_LPARENS, T_INT, T_FLOAT, T_STRING, T_NILL, T_TRUE, T_FALSE, T_LBRACKET, T_LBRACES, T_ID}) ){
+		FACTOR();
+		TERM1();
+	} else {
+		printerror();
+	}
+	level--;
+}
+
+void TERM1(){
+	level++;
+	printlvl("TERM1");
+	if(tok == T_TIMES ){
+		match(T_TIMES);
+		FACTOR();
+		TERM1();
+	}else if (tok == T_DIV){
+		match(T_DIV);
+		FACTOR();
+		TERM1();
+	}else if(inside(tok,{T_PLUS, T_MINUS, T_EQ, T_NEQ, T_LT, T_GT, T_LE, T_GE, T_TO, T_DO, T_AND, T_OR, T_THEN, T_COMMA, T_RBRACKET, T_RPARENS, T_ENDL, T_RBRACES})){
+		// epsilon
+	} else {
+		printerror();
+	}
 	level--;
 }
 
 void ARGUMENTS(){}
+void ARGUMENTS_(){}
 void IDENTIFIER(){}
-void ASSIGNMENT(){}
-void IF(){}
-void FORLOOP(){}
-void WHILELOOP(){}
-void INDEFINITELOOP(){}
-void EXPR(){}
 void PARAMETERS_(){}
-void PARAMDECL(){}
-void PARAMDECL_(){}
-void CONDITION(){}
-void CONDITION_(){}
-void ELSEIF1(){}
-void ELSEIF2(){}
-void ARITHMETIC(){}
 void L_VALUE(){}
 void L_VALUE1(){}
-void LOGIC(){}
-void COMPARISON(){}
-void COMPARISON_(){}
-void TERM(){}
-void TERM_(){}
 void FACTOR(){}
 void FINAL(){}
 void BOOLEAN(){}
@@ -539,8 +838,6 @@ void OBJECT_(){}
 void REFERENCE(){}
 void REFERENCE_(){}
 void REFERENCE2(){}
-void ARGUMENTS(){}
-void ARGUMENTS_(){}
 void DICTIONARYINIT(){}
 void DICTIONARYINIT_(){}
 void ARRAYINIT(){}
