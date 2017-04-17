@@ -10,8 +10,8 @@ tableparser: topdown_table/tableparser.lex topdown_table/table.h
 	g++ -std=c++11 -o ../tableparser tableparser.cpp
 
 
-topdown_table/table.h: topdown_table/rules.txt
+topdown_table/table.h: topdown_table/rules.txt 
 	cd topdown_table; \
-	tablebuilder.py > table.h
+	./tablebuilder.py > table.h
 
 

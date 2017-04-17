@@ -315,18 +315,22 @@ void white_advance()
 }
 
 <<EOF>>	{
-		printf("Fim do arquivo.\n");
+		// printf("Fim do arquivo.\n");
 		return T_EOF;
 	}
 
 . {
-	printf("Erro Lexico: %s\n", yytext);
-	printf("Linha %d, coluna %d\n", line, column);
+	fprintf(stderr, "Erro Lexico: %s\n", yytext);
+	fprintf(stderr, "Linha %d, coluna %d\n", line, column);
 	advance();
 }
 
 %%
 /*** seção de código C ***/
+
+void printident(int level) {
+	for (int i = 0; i < level; i++) printf(" ");
+}
 
 int main()
 {
@@ -334,36 +338,50 @@ int main()
 	stack.push_back(ii(NT_PROGRAM, 0));
 	int tok = yylex();
 
+	bool success = true;
+
 	while (!stack.empty()) {
 		int symbol = stack.back().first;
 		int level = stack.back().second;
 		stack.pop_back();
 		if (symbol > 0) { //terminal
 			if (symbol != tok) {
-				printf("Erro sintatico: linha %d, coluna %d\n", line, column);
-				printf("(expecting %s, got %s)\n", symbol_names[symbol], symbol_names[tok]);
-				return 1;
+				if (success) {
+					fprintf(stderr, "Erro sintatico: linha %d, coluna %d\n", line, column);
+					fprintf(stderr, "(expecting %s, got %s)\n", symbol_names[symbol], symbol_names[tok]);
+					success = false;
+				}
+			} else {
+		        	printident(level);
+				printf("%s (%s)\n", symbol_names[symbol], yytext);
+				success = true;
 			}
-		        for (int i = 0; i < level; i++) printf(" ");
-			printf("%s (%s)\n", symbol_names[symbol], yytext);
 			tok = yylex();
 		} else { //nonterminal
+
 			int prod = table[-symbol][tok];
-			if (prod == ERRORCODE) {
-				printf("Erro sintatico: linha %d, coluna %d\n", line, column);
-				printf("(no rule for %s)\n", symbol_names[tok]);
-				return 1;
+			if (prod == POPCODE || prod == SCANCODE) {
+				if (success) {
+					fprintf(stderr, "Erro sintatico: linha %d, coluna %d\n", line, column);
+					fprintf(stderr, "(no rule for %s)\n", symbol_names[tok]);
+					success = false;
+				}
+				while (prod == SCANCODE && tok != T_EOF) {
+					tok = yylex();
+					prod = table[-symbol][tok];	
+				}
 			}
-		        for (int i = 0; i < level; i++) printf(" ");
-			printf("%s\n", symbol_names[symbol]);
-			for (int x : productions[prod]) {
-				stack.push_back(ii(x, level+1));
+			else {
+			        printident(level);
+				printf("%s\n", symbol_names[symbol]);
+				for (int x : productions[prod]) {
+					stack.push_back(ii(x, level+1));
+				}
+				success = true;
 			}
 		}
-	}
-
-    /* executa o analisador léxico. */
-    return 0;
+    	}
+	return 0;
 }
 int yywrap(){ return 1; }
 
