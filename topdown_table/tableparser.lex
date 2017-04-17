@@ -40,79 +40,66 @@ void white_advance()
 }
 
 "import" {
-	// printf("IMPORT\n");
 	advance();
 	return T_IMPORT;
 }
 
 "return" {
-	// printf("RETURN\n");
 	advance();
 	return T_RETURN;
 }
 
 "break" {
-	// printf("BREAK\n");
 	advance();
 	return T_BREAK;
 }
 
 "continue" {
-	// printf("CONTINUE\n");
 	advance();
 	return T_CONTINUE;
 }
 
 "function" {
-	// printf("FUNCTION\n");
 	advance();
 	return T_FUNCTION;
 }
 
 "end" {
-	// printf("END\n");
 	advance();
 	return T_END;
 }
 
 "if" {
-	// printf("IF\n");
 	advance();
 	return T_IF;
 }
 
 "then" {
-	// printf("THEN\n");
 	advance();
 	return T_THEN;
 }
 
 "else" {
-	// printf("ELSE\n");
 	advance();
 	return T_ELSE;
 }
 
 "for" {
-	// printf("FOR\n");
 	advance();
 	return T_FOR;
 }
 
 "to" {
-	// printf("TO\n");
 	advance();
 	return T_TO;
 }
 
 "loop" {
-	// printf("LOOP\n");
 	advance();
 	return T_LOOP;
 }
 
 "while" {
-	// printf("WHILE\n");
 	advance();
 	return T_WHILE;
 }
@@ -124,175 +111,156 @@ void white_advance()
 }
 
 "iterate" {
-	// printf("ITERATE\n");
 	advance();
 	return T_ITERATE;
 }
 
 "and" {
-	// printf("AND\n");
 	advance();
 	return T_AND;
 }
 
 "or" {
-	// printf("OR\n");
 	advance();
 	return T_OR;
 }
 
 "not" {
-	// printf("NOT\n");
 	advance();
 	return T_NOT;
 }
 
 "(" {
-	// printf(" ( \n");
 	advance();
 	return T_LPARENS;
 }
 
 ")" {
-	// printf(" ) \n");
 	advance();
 	return T_RPARENS;
 }
 
 "=" {
-	// printf(" = \n");
 	advance();
 	return T_ASSIGN;
 }
 
 "." {
-	// printf(" . \n");
 	advance();
 	return T_DOT;
 }
 
 "[" {
-	// printf(" [ \n");
 	advance();
 	return T_LBRACKET;
 }
 
 "]" {
-	// printf(" ] \n");
 	advance();
 	return T_RBRACKET;
 }
 
+"{" {
+	advance();
+	return T_LBRACES;
+}
+
+"}" {
+	advance();
+	return T_RBRACES;
+}
+
 "==" {
-	// printf(" == \n");
 	advance();
 	return T_EQ;
 }
 
 "!=" {
-	// printf(" != \n");
 	advance();
 	return T_NEQ;
 }
 
 "<" {
-	// printf(" < \n");
 	advance();
 	return T_LT;
 }
 
 ">" {
-	// printf(" > \n");
 	advance();
 	return T_GT;
 }
 
 "<=" {
-	// printf(" <= \n");
 	advance();
 	return T_LE;
 }
 
 ">=" {
-	// printf(" >= \n");
 	advance();
 	return T_GE;
 }
 
 "+" {
-	// printf(" + \n");
 	advance();
 	return T_PLUS;
 }
 
 "-" {
-	// printf(" - \n");
 	advance();
 	return T_MINUS;
 }
 
 "*" {
-	// printf(" * \n");
 	advance();
 	return T_TIMES;
 }
 
 "/" {
-	// printf(" / \n");
 	advance();
 	return T_DIV;
 }
 
 "!" {
-	// printf(" ! \n");
 	advance();
 	return T_NEG;
 }
 
 "," {
-	// printf(" , \n");
 	advance();
 	return T_COMMA;
 }
 
 ":" {
-	// printf(" : \n");
 	advance();
 	return T_COLON;
 }
 
 "nill" {
-	// printf("NILL\n");
 	advance();
 	return T_NILL;
 }
 
 "true" {
-	// printf("TRUE\n");
 	advance();
 	return T_TRUE;
 }
 
 "false" {
-	// printf("FALSE\n");
 	advance();
 	return T_FALSE;
 }
 
 [0-9]+ {
-	// printf("Inteiro: %s\n", yytext);
 	advance();
 	return T_INT;
 }
 
 [0-9]+[\.][0-9]* {
-	// printf("Float: %s\n", yytext);
 	advance();
 	return T_FLOAT;
 }
 
 (\"[^\"\n]*\")|(\'[^\'\n]*\') {
-	// printf("String: %s\n", yytext);
 	white_advance();
 	return T_STRING;
 }
@@ -308,16 +276,13 @@ void white_advance()
 }
 
 [a-zA-Z_][a-zA-Z0-9_]* {
-	/* yytext é a cadeia contendo o texto casado. */
-	// printf("Identificador: %s\n", yytext);
 	advance();
 	return T_ID;
 }
 
 <<EOF>>	{
-		// printf("Fim do arquivo.\n");
-		return T_EOF;
-	}
+	return T_EOF;
+}
 
 . {
 	fprintf(stderr, "Erro Lexico: %s\n", yytext);
