@@ -97,7 +97,18 @@ for l, r, p in productions:
 
 # print(table)
 
-errorcode = len(productions) + 1
+
+scancode = len(productions) + 1
+popcode = scancode + 1
+
+follow = {}
+with open('follow.txt') as g:
+    for line in g.readlines():
+        nt, ls = line.split('\t')
+        nt = nt.strip()
+        ls = map(lambda s: s.strip(), ls.split(','))
+        follow[codes[nt]] = list(map(lambda x: codes[x], ls))
+
 
 tablefill = []
 for nti in range(maxnonterminal+1):
@@ -106,7 +117,10 @@ for nti in range(maxnonterminal+1):
         if (-nti, ti) in table:
             ls.append(table[(-nti, ti)])
         else:
-            ls.append(errorcode)
+            if nti == 0 or ti in follow[-nti]:
+                ls.append(popcode)
+            else:
+                ls.append(scancode)
     tablefill.append(ls)
 
 # print(tablefill)
@@ -129,7 +143,8 @@ typedef std::vector<int> production;
 
 const int MAXTERM = {};
 const int MAXNONTERM = {};
-const int ERRORCODE = {};
+const int POPCODE = {};
+const int SCANCODE = {};
 
 {}
 
@@ -141,6 +156,6 @@ std::vector<std::vector<int>> table = {};
 std::map<int, const char*> symbol_names = {};
 
 #endif
-'''.format(maxterminal, maxnonterminal, errorcode, defs, pds, table_expr, symbol_names)
+'''.format(maxterminal, maxnonterminal, popcode, scancode, defs, pds, table_expr, symbol_names)
 
 print(sourcecode)
