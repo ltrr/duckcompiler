@@ -2356,13 +2356,14 @@ void PROGRAM(){
     } else {
 	printerror();
     }
+    match(T_EOF);
 }
 
 void STMTLIST(){
     level++;
-    printlvl("STMTLIST");
-    if(inside(tok,{T_LOOP,T_END,T_ELSE,T_EOF})){	// epsilon
-    	// Para não cair no caso de erro
+    printlvl("STMTLIST"); // T_LOOP,
+    if(inside(tok,{T_LOOP,T_END,T_ELSE,T_EOF})){
+	// epsilon
     } else if(inside(tok, {T_IMPORT, T_ENDL, T_RETURN, T_BREAK, T_CONTINUE, T_ID, T_IF, T_WHILE, T_FUNCTION, T_ITERATE, T_FOR})) {
 		STMT();
 		STMTLIST();
