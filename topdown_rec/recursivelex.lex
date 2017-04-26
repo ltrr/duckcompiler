@@ -33,12 +33,12 @@ int yylex();
 void printerror(){
 	if (p_error) {
 		fprintf(stderr, "Erro sintatico: linha %d, coluna %d\n", line, column);
-		fprintf(stderr, "Unexpected symbol %s (%s)\n", yytext, symbol_names[tok]);
+		fprintf(stderr, "Unexpected symbol '%s' (%s)\n", yytext, symbol_names[tok]);
 		while (tok != T_ENDL && tok != T_EOF) {
 			tok = yylex();
 		}
-		if(tok != T_EOF)
-			tok = yylex();
+		/*if(tok != T_EOF)
+			tok = yylex();*/
 		p_error = false;
 	}
 }
@@ -394,7 +394,7 @@ void match(int symbol){
 		p_error = true;
 	} else if(p_error) {
 		fprintf(stderr,"Erro sintatico: linha %d, coluna %d\n", line, column);
-		fprintf(stderr,"Got %s (%s), expected %s\n", yytext, symbol_names[tok], symbol_names[exp]);
+		fprintf(stderr,"Got '%s' (%s), expected %s\n", yytext, symbol_names[tok], symbol_names[exp]);
 		while (tok != T_ENDL && tok != T_EOF) {
 			tok = yylex();
 		}
