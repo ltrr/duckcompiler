@@ -4,4 +4,7 @@ lexparser
 tableparser
 lexical/lexparser.c
 topdown_table/tableparser.cpp
-
+bottomup/lexparser.cpp
+bottomup/sintparser.cpp
+bottomup/tokens.h
+bottomup/parser
