@@ -1,4 +1,5 @@
-while true do
-loop
+if
+
+for i = 2+2 to 5 do
 loop
 

@@ -1,6 +1,6 @@
-#line 2 "reclex.cpp"
+#line 2 "table.cpp"
 
-#line 4 "reclex.cpp"
+#line 4 "table.cpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -542,52 +542,17 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "recursivelex.lex"
+#line 1 "tableparser.lex"
 /*** seção de definição ***/
-#line 4 "recursivelex.lex"
-#include <stdio.h>
+#line 4 "tableparser.lex"
+#include <cstdio>
 #include <vector>
 #include "table.h"
-#include "def.h"
 
-using namespace std;
+typedef std::pair<int, int> ii;
 
 int line = 1;	// A linha do caractere corrente
 int column = 1;	// A coluna do caractere corrente
-int level = 0;
-int tok,exp;
-bool p_error = true;
-
-void printlvl(char* nt){
-	for(int i = 0; i < level; i++)
-		printf(" ");
-	printf("%s\n",nt);
-}
-
-bool inside(int s, vector<int> symbols){
-	bool ins = false;
-	for(int i = 0; i < symbols.size(); i++)
-		if(s == symbols[i])
-			return true;
-	return false;
-}
-
-int yylex();
-
-void printerror(){
-	if (p_error) {
-		fprintf(stderr, "Erro sintatico: linha %d, coluna %d\n", line, column);
-		fprintf(stderr, "Unexpected symbol %s (%s)\n", yytext, symbol_names[tok]);
-		while (tok != T_ENDL && tok != T_EOF) {
-			tok = yylex();
-		}
-		if(tok != T_EOF)
-			tok = yylex();
-		p_error = false;
-	}
-}
-
-void match(int symbol);
 
 void advance()
 // Adiciona o tamanho da string lida ao contador de coluna
@@ -610,7 +575,7 @@ void white_advance()
 	}
 }
 
-#line 614 "reclex.cpp"
+#line 579 "table.cpp"
 
 #define INITIAL 0
 
@@ -828,10 +793,9 @@ YY_DECL
 		}
 
 	{
-#line 71 "recursivelex.lex"
+#line 36 "tableparser.lex"
 
-		/*** seção de regras ***/
-#line 835 "reclex.cpp"
+#line 799 "table.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -891,413 +855,369 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 73 "recursivelex.lex"
+#line 37 "tableparser.lex"
 {
-    //printf("Comentário: %s\n", yytext);
+    printf("Comentário: %s\n", yytext);
     advance();
 }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 78 "recursivelex.lex"
+#line 42 "tableparser.lex"
 {
-	// printf("IMPORT\n");
 	advance();
 	return T_IMPORT;
 }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 84 "recursivelex.lex"
+#line 47 "tableparser.lex"
 {
-	// printf("RETURN\n");
 	advance();
 	return T_RETURN;
 }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 90 "recursivelex.lex"
+#line 52 "tableparser.lex"
 {
-	// printf("BREAK\n");
 	advance();
 	return T_BREAK;
 }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 96 "recursivelex.lex"
+#line 57 "tableparser.lex"
 {
-	// printf("CONTINUE\n");
 	advance();
 	return T_CONTINUE;
 }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 102 "recursivelex.lex"
+#line 62 "tableparser.lex"
 {
-	// printf("FUNCTION\n");
 	advance();
 	return T_FUNCTION;
 }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 108 "recursivelex.lex"
+#line 67 "tableparser.lex"
 {
-	// printf("END\n");
 	advance();
 	return T_END;
 }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 114 "recursivelex.lex"
+#line 72 "tableparser.lex"
 {
-	// printf("IF\n");
 	advance();
 	return T_IF;
 }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 120 "recursivelex.lex"
+#line 77 "tableparser.lex"
 {
-	// printf("THEN\n");
 	advance();
 	return T_THEN;
 }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 126 "recursivelex.lex"
+#line 82 "tableparser.lex"
 {
-	// printf("ELSE\n");
 	advance();
 	return T_ELSE;
 }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 132 "recursivelex.lex"
+#line 87 "tableparser.lex"
 {
-	// printf("FOR\n");
 	advance();
 	return T_FOR;
 }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 138 "recursivelex.lex"
+#line 92 "tableparser.lex"
 {
-	// printf("TO\n");
 	advance();
 	return T_TO;
 }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 144 "recursivelex.lex"
+#line 97 "tableparser.lex"
 {
-	// printf("LOOP\n");
 	advance();
 	return T_LOOP;
 }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 150 "recursivelex.lex"
+#line 102 "tableparser.lex"
 {
-	// printf("WHILE\n");
 	advance();
 	return T_WHILE;
 }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 156 "recursivelex.lex"
+#line 107 "tableparser.lex"
 {
-	// printf("DO\n");
+	 printf("DO\n");
 	advance();
 	return T_DO;
 }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 162 "recursivelex.lex"
+#line 113 "tableparser.lex"
 {
-	// printf("ITERATE\n");
 	advance();
 	return T_ITERATE;
 }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 168 "recursivelex.lex"
+#line 118 "tableparser.lex"
 {
-	// printf("AND\n");
 	advance();
 	return T_AND;
 }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 174 "recursivelex.lex"
+#line 123 "tableparser.lex"
 {
-	// printf("OR\n");
 	advance();
 	return T_OR;
 }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 180 "recursivelex.lex"
+#line 128 "tableparser.lex"
 {
-	// printf("NOT\n");
 	advance();
 	return T_NOT;
 }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 186 "recursivelex.lex"
+#line 133 "tableparser.lex"
 {
-	// printf(" ( \n");
 	advance();
 	return T_LPARENS;
 }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 192 "recursivelex.lex"
+#line 138 "tableparser.lex"
 {
-	// printf(" ) \n");
 	advance();
 	return T_RPARENS;
 }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 198 "recursivelex.lex"
+#line 143 "tableparser.lex"
 {
-	// printf(" = \n");
 	advance();
 	return T_ASSIGN;
 }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 204 "recursivelex.lex"
+#line 148 "tableparser.lex"
 {
-	// printf(" . \n");
 	advance();
 	return T_DOT;
 }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 210 "recursivelex.lex"
+#line 153 "tableparser.lex"
 {
-	// printf(" [ \n");
 	advance();
 	return T_LBRACKET;
 }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 216 "recursivelex.lex"
+#line 158 "tableparser.lex"
 {
-	// printf(" ] \n");
 	advance();
 	return T_RBRACKET;
 }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 222 "recursivelex.lex"
+#line 163 "tableparser.lex"
 {
-	// printf(" { \n");
 	advance();
 	return T_LBRACES;
 }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 228 "recursivelex.lex"
+#line 168 "tableparser.lex"
 {
-	// printf(" } \n");
 	advance();
 	return T_RBRACES;
 }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 234 "recursivelex.lex"
+#line 173 "tableparser.lex"
 {
-	// printf(" == \n");
 	advance();
 	return T_EQ;
 }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 240 "recursivelex.lex"
+#line 178 "tableparser.lex"
 {
-	// printf(" != \n");
 	advance();
 	return T_NEQ;
 }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 246 "recursivelex.lex"
+#line 183 "tableparser.lex"
 {
-	// printf(" < \n");
 	advance();
 	return T_LT;
 }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 252 "recursivelex.lex"
+#line 188 "tableparser.lex"
 {
-	// printf(" > \n");
 	advance();
 	return T_GT;
 }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 258 "recursivelex.lex"
+#line 193 "tableparser.lex"
 {
-	// printf(" <= \n");
 	advance();
 	return T_LE;
 }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 264 "recursivelex.lex"
+#line 198 "tableparser.lex"
 {
-	// printf(" >= \n");
 	advance();
 	return T_GE;
 }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 270 "recursivelex.lex"
+#line 203 "tableparser.lex"
 {
-	// printf(" + \n");
 	advance();
 	return T_PLUS;
 }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 276 "recursivelex.lex"
+#line 208 "tableparser.lex"
 {
-	// printf(" - \n");
 	advance();
 	return T_MINUS;
 }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 282 "recursivelex.lex"
+#line 213 "tableparser.lex"
 {
-	// printf(" * \n");
 	advance();
 	return T_TIMES;
 }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 288 "recursivelex.lex"
+#line 218 "tableparser.lex"
 {
-	// printf(" / \n");
 	advance();
 	return T_DIV;
 }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 294 "recursivelex.lex"
+#line 223 "tableparser.lex"
 {
-	// printf(" ! \n");
 	advance();
 	return T_NEG;
 }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 300 "recursivelex.lex"
+#line 228 "tableparser.lex"
 {
-	// printf(" , \n");
 	advance();
 	return T_COMMA;
 }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 306 "recursivelex.lex"
+#line 233 "tableparser.lex"
 {
-	// printf(" : \n");
 	advance();
 	return T_COLON;
 }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 312 "recursivelex.lex"
+#line 238 "tableparser.lex"
 {
-	// printf("NILL\n");
 	advance();
 	return T_NILL;
 }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 318 "recursivelex.lex"
+#line 243 "tableparser.lex"
 {
-	// printf("TRUE\n");
 	advance();
 	return T_TRUE;
 }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 324 "recursivelex.lex"
+#line 248 "tableparser.lex"
 {
-	// printf("FALSE\n");
 	advance();
 	return T_FALSE;
 }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 330 "recursivelex.lex"
+#line 253 "tableparser.lex"
 {
-	// printf("Inteiro: %s\n", yytext);
 	advance();
 	return T_INT;
 }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 336 "recursivelex.lex"
+#line 258 "tableparser.lex"
 {
-	// printf("Float: %s\n", yytext);
 	advance();
 	return T_FLOAT;
 }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 342 "recursivelex.lex"
+#line 263 "tableparser.lex"
 {
-	// printf("String: %s\n", yytext);
 	white_advance();
 	return T_STRING;
 }
@@ -1305,7 +1225,7 @@ YY_RULE_SETUP
 case 47:
 /* rule 47 can match eol */
 YY_RULE_SETUP
-#line 348 "recursivelex.lex"
+#line 268 "tableparser.lex"
 {
 	white_advance();
 	return T_ENDL;
@@ -1313,7 +1233,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 353 "recursivelex.lex"
+#line 273 "tableparser.lex"
 { 
 	//printf("Whitespace\n");
 	white_advance();
@@ -1321,37 +1241,33 @@ YY_RULE_SETUP
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 358 "recursivelex.lex"
+#line 278 "tableparser.lex"
 {
-	/* yytext é a cadeia contendo o texto casado. */
-	// printf("Identificador: %s\n", yytext);
 	advance();
 	return T_ID;
 }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 365 "recursivelex.lex"
+#line 283 "tableparser.lex"
 {
-		//printf("Fim do arquivo.\n");
-		//match(T_EOF);
-		return T_EOF;
-	}
+	return T_EOF;
+}
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 371 "recursivelex.lex"
+#line 287 "tableparser.lex"
 {
-	fprintf(stderr,"Erro Lexico: %s\n", yytext);
-	fprintf(stderr,"Linha %d, coluna %d\n", line, column);
+	fprintf(stderr, "Erro Lexico: %s\n", yytext);
+	fprintf(stderr, "Linha %d, coluna %d\n", line, column);
 	advance();
 }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 377 "recursivelex.lex"
+#line 293 "tableparser.lex"
 ECHO;
 	YY_BREAK
-#line 1355 "reclex.cpp"
+#line 1271 "table.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2350,736 +2266,67 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 377 "recursivelex.lex"
+#line 293 "tableparser.lex"
 
 
 /*** seção de código C ***/
-int main(void)
+
+void printident(int level) {
+	for (int i = 0; i < level; i++) printf(" ");
+}
+
+int main()
 {
-    /* executa o analisador léxico. */
-    // yylex();
-    PROGRAM();
-    return 0;
+	std::vector<ii> stack;
+	stack.push_back(ii(NT_PROGRAM, 0));
+	int tok = yylex();
+
+	bool success = true;
+
+	while (!stack.empty()) {
+		int symbol = stack.back().first;
+		int level = stack.back().second;
+		stack.pop_back();
+		if (symbol > 0) { //terminal
+			if (symbol != tok) {
+				if (success) {
+					fprintf(stderr, "Erro sintatico: linha %d, coluna %d\n", line, column);
+					fprintf(stderr, "(expecting %s, got %s)\n", symbol_names[symbol], symbol_names[tok]);
+					success = false;
+				}
+			} else {
+		        	printident(level);
+				printf("%s (%s)\n", symbol_names[symbol], yytext);
+				success = true;
+			}
+			tok = yylex();
+		} else { //nonterminal
+
+			int prod = table[-symbol][tok];
+			if (prod == POPCODE || prod == SCANCODE) {
+				if (success) {
+					fprintf(stderr, "Erro sintatico: linha %d, coluna %d\n", line, column);
+					fprintf(stderr, "(no rule for %s)\n", symbol_names[tok]);
+					success = false;
+				}
+				while (prod == SCANCODE && tok != T_EOF) {
+					tok = yylex();
+					prod = table[-symbol][tok];	
+				}
+			}
+			else {
+			        printident(level);
+				printf("%s\n", symbol_names[symbol]);
+				for (int x : productions[prod]) {
+					stack.push_back(ii(x, level+1));
+				}
+				success = true;
+			}
+		}
+    	}
+	return 0;
 }
 int yywrap(){ return 1; }
 
-void match(int symbol){
-	exp = symbol;
-	if(symbol == tok){
-		level++;
-		printlvl(yytext);
-		level--;
-		p_error = true;
-	} else if(p_error) {
-		fprintf(stderr,"Erro sintatico: linha %d, coluna %d\n", line, column);
-		fprintf(stderr,"Got %s (%s), expected %s\n", yytext, symbol_names[tok], symbol_names[exp]);
-		while (tok != T_ENDL && tok != T_EOF) {
-			tok = yylex();
-		}
-		p_error = false;
-	}
-	if (tok != T_EOF)
-		tok = yylex();
-}
 
-// ----- Seção de código das funções de recursão do analisador
-
-void PROGRAM(){
-    printlvl("PROGRAM");
-    tok = yylex();
-    if(inside(tok,{T_IMPORT, T_ENDL, T_RETURN, T_BREAK, T_CONTINUE, T_ID, T_IF, T_WHILE, T_FUNCTION, T_ITERATE, T_FOR})){
-	STMTLIST();
-    } else {
-	printerror();
-    }
-    match(T_EOF);
-}
-
-void STMTLIST(){
-    level++;
-    printlvl("STMTLIST"); // T_LOOP,
-    if(inside(tok,{T_LOOP,T_END,T_ELSE,T_EOF})){
-	// epsilon
-    } else if(inside(tok, {T_IMPORT, T_ENDL, T_RETURN, T_BREAK, T_CONTINUE, T_ID, T_IF, T_WHILE, T_FUNCTION, T_ITERATE, T_FOR})) {
-		STMT();
-		STMTLIST();
-    } else {	// Error
-    	printerror();
-    }
-    level--;
-}
-
-void STMT(){
-	level++;
-	printlvl("STMT");
-	if(tok == T_IMPORT){
-		match(T_IMPORT);
-		match(T_ID);
-		match(T_ENDL);
-	} else if(tok == T_ENDL){
-		match(T_ENDL);
-	} else if(tok == T_ID){
-		L_VALUE();
-		LVSTMT();
-		match(T_ENDL);
-	} else if(tok == T_FUNCTION){
-		FUNCTIONDEF();
-		match(T_ENDL);
-	} else if(tok == T_IF){
-		IF();
-		match(T_ENDL);
-	} else if(tok == T_FOR){
-		FORLOOP();
-		match(T_ENDL);
-	} else if(tok == T_WHILE){
-		WHILELOOP();
-		match(T_ENDL);
-	} else if(tok == T_ITERATE){
-		INDEFINITELOOP();
-		match(T_ENDL);
-	} else if(tok == T_RETURN){
-		match(T_RETURN);
-		EXPR();
-		match(T_ENDL);
-	} else if(tok == T_BREAK){
-		match(T_BREAK);
-		match(T_ENDL);
-	} else if(tok == T_CONTINUE){
-		match(T_CONTINUE);
-		match(T_ENDL);
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void LVSTMT(){
-	level++;
-	printlvl("LVSTMT");
-	if(tok == T_ASSIGN){
-		ASSIGNMENT();
-	} else if(tok == T_LPARENS){
-		CALL();
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void CALL(){
-	level++;
-	printlvl("CALL");
-	if(tok == T_LPARENS){
-		match(T_LPARENS);
-		CALL1();
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void CALL1(){
-	level++;
-	printlvl("CALL1");
-	if(tok == T_RPARENS){
-		match(T_RPARENS);
-	} else if(inside(tok,{T_NOT, T_MINUS, T_NEG, T_LPARENS, T_INT, T_FLOAT, T_STRING, T_NILL, T_TRUE, T_FALSE, T_LBRACKET, T_LBRACES, T_ID})){
-		ARGUMENTS();
-		match(T_RPARENS);
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void FUNCTIONDEF(){
-	level++;
-	printlvl("FUNCTIONDEF");
-	if(tok == T_FUNCTION){
-		match(T_FUNCTION);
-		match(T_ID);
-		PARAMETERS();
-		match(T_ENDL);
-		STMTLIST();
-		match(T_END);
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void PARAMETERS(){
-	level++;
-	printlvl("PARAMETERS");
-	if(tok == T_LPARENS){
-		match(T_LPARENS);
-		PARAMETERS1();
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void PARAMETERS1(){
-	level++;
-	printlvl("PARAMETERS1");
-	if(tok == T_RPARENS){
-		match(T_RPARENS);
-	} else if(tok == T_ID){
-		PARAMDECL();
-		match(T_RPARENS);
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void PARAMDECL(){
-	level++;
-	printlvl("PARAMDECL");
-	if(tok == T_ID){
-		match(T_ID);
-		PARAMDECL1();
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void PARAMDECL1(){
-	level++;
-	printlvl("PARAMDECL1");
-	if(tok == T_COMMA){
-		match(T_COMMA);
-		match(T_ID);
-		PARAMDECL1();
-	} else if(tok == T_RPARENS){
-		// epsilon
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void IF(){
-	level++;
-	printlvl("IF");
-	if(tok == T_IF){
-		match(T_IF);
-		CONDITION();
-		match(T_THEN);
-		match(T_ENDL);
-		STMTLIST();
-		ELSEIF1();
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void ELSEIF1(){
-	level++;
-	printlvl("ELSEIF1");
-	if(tok == T_ELSE){
-		match(T_ELSE);
-		ELSEIF2();
-	} else if(tok == T_END){
-		match(T_END);
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void ELSEIF2(){
-	level++;
-	printlvl("ELSEIF2");
-	if(tok == T_ENDL){
-		match(T_ENDL);
-		STMTLIST();
-		match(T_END);
-	} else if(tok == T_IF){
-		IF();		
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void FORLOOP(){
-	level++;
-	printlvl("FORLOOP");
-	if(tok == T_FOR){
-		match(T_FOR);
-		match(T_ID);
-		match(T_ASSIGN);
-		ARITHMETIC();
-		match(T_TO);
-		ARITHMETIC();
-		match(T_DO);
-		match(T_ENDL);
-		STMTLIST();
-		match(T_LOOP);
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void WHILELOOP(){
-	level++;
-	printlvl("WHILELOOP");
-	if(tok == T_WHILE){
-		match(T_WHILE);
-		CONDITION();
-		match(T_DO);
-		match(T_ENDL);
-		STMTLIST();
-		match(T_LOOP);
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void INDEFINITELOOP(){
-	level++;
-	printlvl("INDEFINITELOOP");
-	if(tok == T_ITERATE){
-		match(T_ITERATE);
-		match(T_ENDL);
-		STMTLIST();
-		match(T_LOOP);
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void ASSIGNMENT(){
-	level++;
-	printlvl("ASSIGNMENT");
-	if(tok == T_ASSIGN){
-		match(T_ASSIGN);
-		CONDITION();
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void EXPR(){
-	level++;
-	printlvl("EXPR");
-	if(inside(tok,{T_NOT, T_MINUS, T_NEG, T_LPARENS, T_INT, T_FLOAT, T_STRING, T_NILL, T_TRUE, T_FALSE, T_LBRACKET, T_LBRACES, T_ID})){
-		CONDITION();
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void CONDITION(){
-	level++;
-	printlvl("CONDITION");
-	if(inside(tok,{T_NOT, T_MINUS, T_NEG, T_LPARENS, T_INT, T_FLOAT, T_STRING, T_NILL, T_TRUE, T_FALSE, T_LBRACKET, T_LBRACES, T_ID})){
-		LOGIC();
-		CONDITION1();
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void CONDITION1(){
-	level++;
-	printlvl("CONDITION1");
-	if(tok == T_AND){
-		match(T_AND);
-		LOGIC();
-		CONDITION1();
-	} else if(tok == T_OR){
-		match(T_OR);
-		LOGIC();
-		CONDITION1();
-	} else if(inside(tok,{T_DO, T_THEN, T_COMMA, T_RBRACKET, T_RPARENS, T_ENDL, T_RBRACES})){
-		// epsilon
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void LOGIC(){
-	level++;
-	printlvl("LOGIC");
-	if(tok == T_NOT){
-		match(T_NOT);
-		COMPARISON();
-	} else if(inside(tok,{T_MINUS, T_NEG, T_LPARENS, T_INT, T_FLOAT, T_STRING, T_NILL, T_TRUE, T_FALSE, T_LBRACKET, T_LBRACES, T_ID})){
-		COMPARISON();
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void COMPARISON(){
-	level++;
-	printlvl("COMPARISON");
-	if(inside(tok,{T_MINUS, T_NEG, T_LPARENS, T_INT, T_FLOAT, T_STRING, T_NILL, T_TRUE, T_FALSE, T_LBRACKET, T_LBRACES, T_ID})){
-		ARITHMETIC();
-		COMPARISON1();
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void COMPARISON1(){
-	level++;
-	printlvl("COMPARISON1");
-	if(tok == T_EQ){
-		match(T_EQ);
-		ARITHMETIC();
-		COMPARISON1();
-	} else if(tok == T_NEQ){
-		match(T_NEQ);
-		ARITHMETIC();
-		COMPARISON1();
-	} else if(tok == T_LT){
-		match(T_LT);
-		ARITHMETIC();
-		COMPARISON1();
-	} else if(tok == T_GT){
-		match(T_GT);
-		ARITHMETIC();
-		COMPARISON1();
-	} else if(tok == T_LE){
-		match(T_LE);
-		ARITHMETIC();
-		COMPARISON1();
-	} else if(tok == T_GE){
-		match(T_GE);
-		ARITHMETIC();
-		COMPARISON1();
-	} else if(inside(tok,{T_AND, T_OR, T_DO, T_THEN, T_COMMA, T_RBRACKET, T_RPARENS, T_ENDL, T_RBRACES})){
-		// epsilon
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void ARITHMETIC(){
-	level++;
-	printlvl("ARITHMETIC");
-	if(inside(tok,{T_MINUS, T_NEG, T_LPARENS, T_INT, T_FLOAT, T_STRING, T_NILL, T_TRUE, T_FALSE, T_LBRACKET, T_LBRACES, T_ID})){
-	        TERM();
-		ARITHMETIC1();
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void ARITHMETIC1(){
-	level++;
-	printlvl("ARITHMETIC1");
-	if(tok == T_PLUS){
-		match(T_PLUS);
-		TERM();
-		ARITHMETIC1();
-	} else if (tok == T_MINUS){
-		match(T_MINUS);
-		TERM();
-		ARITHMETIC1();
-	} else if(inside(tok,{T_EQ, T_NEQ, T_LT, T_GT, T_LE, T_GE, T_TO, T_DO, T_AND, T_OR, T_THEN, T_COMMA, T_RBRACKET, T_RPARENS, T_ENDL, T_RBRACES})){
-		// epsilon
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void TERM(){
-	level++;
-	printlvl("TERM");
-	if(inside(tok,{T_MINUS, T_NEG, T_LPARENS, T_INT, T_FLOAT, T_STRING, T_NILL, T_TRUE, T_FALSE, T_LBRACKET, T_LBRACES, T_ID}) ){
-		FACTOR();
-		TERM1();
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void TERM1(){
-	level++;
-	printlvl("TERM1");
-	if(tok == T_TIMES ){
-		match(T_TIMES);
-		FACTOR();
-		TERM1();
-	} else if (tok == T_DIV){
-		match(T_DIV);
-		FACTOR();
-		TERM1();
-	} else if(inside(tok,{T_PLUS, T_MINUS, T_EQ, T_NEQ, T_LT, T_GT, T_LE, T_GE, T_TO, T_DO, T_AND, T_OR, T_THEN, T_COMMA, T_RBRACKET, T_RPARENS, T_ENDL, T_RBRACES})){
-		// epsilon
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void FACTOR(){
-	level++;
-	printlvl("FACTOR");
-	if(tok == T_MINUS){
-		match(T_MINUS);
-		FACTOR();
-	} else if(tok == T_NEG){
-		match(T_NEG);
-		FACTOR();
-	} else if(inside(tok,{T_LPARENS, T_INT, T_FLOAT, T_STRING, T_NILL, T_TRUE, T_FALSE, T_LBRACKET, T_LBRACES, T_ID})){
-		FINAL();
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void FINAL(){
-	level++;
-	printlvl("FINAL");
-	if(tok == T_LPARENS){
-		match(T_LPARENS);
-		EXPR();
-		match(T_RPARENS);
-	} else if(inside(tok,{T_TRUE,T_FALSE})){
-		BOOLEAN();
-	} else if(tok == T_INT){
-		match(T_INT);
-	} else if(tok == T_FLOAT){
-		match(T_FLOAT);
-	} else if(tok == T_STRING){
-		match(T_STRING);
-	} else if(inside(tok,{T_LBRACKET,T_LBRACES})){
-		OBJECT();
-	} else if(tok == T_ID){
-		REFERENCE();
-	} else if(tok == T_NILL){
-		match(T_NILL);
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void L_VALUE(){
-	level++;
-	printlvl("LVALUE");
-	if(tok == T_ID){
-		match(T_ID);
-		L_VALUE1();
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void L_VALUE1(){
-	level++;
-	printlvl("LVALUE1");
-	if(inside(tok,{T_LPARENS, T_ASSIGN, T_TIMES, T_DIV, T_PLUS, T_MINUS, T_EQ, T_NEQ, T_LT, T_GT, T_LE, T_GE, T_TO, T_DO, T_AND, T_OR, T_THEN, T_COMMA, T_RBRACKET, T_RPARENS, T_ENDL, T_RBRACES})){
-		// epsilon
-	} else if(tok == T_DOT){
-		match(T_DOT);
-		match(T_ID);
-		L_VALUE1();
-	} else if(tok == T_LBRACKET){
-		match(T_LBRACKET);
-		EXPR();
-		match(T_RBRACKET);
-		L_VALUE1();
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void REFERENCE(){
-	level++;
-	printlvl("REFERENCE");
-	if(tok == T_ID){
-		L_VALUE();
-		REFERENCE1();
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void REFERENCE1(){
-	level++;
-	printlvl("REFERENCE1");
-	if(inside(tok,{T_TIMES, T_DIV, T_PLUS, T_MINUS, T_EQ, T_NEQ, T_LT, T_GT, T_LE, T_GE, T_TO, T_DO, T_AND, T_OR, T_THEN, T_COMMA, T_RBRACKET, T_RPARENS, T_ENDL, T_RBRACES})){
-		// epsilon
-	} else if(tok == T_LPARENS){
-		match(T_LPARENS);
-		REFERENCE2();
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void REFERENCE2(){
-	level++;
-	printlvl("REFERENCE2");
-	if(tok == T_RPARENS){
-		match(T_RPARENS);
-		REFERENCE1();
-	} else if(inside(tok,{T_NOT, T_MINUS, T_NEG, T_LPARENS, T_INT, T_FLOAT, T_STRING, T_NILL, T_TRUE, T_FALSE, T_LBRACKET, T_LBRACES, T_ID})){
-		ARGUMENTS();
-		match(T_RPARENS);
-		REFERENCE1();
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void ARGUMENTS(){
-	level++;
-	printlvl("ARGUMENTS");
-	if(inside(tok,{T_NOT, T_MINUS, T_NEG, T_LPARENS, T_INT, T_FLOAT, T_STRING, T_NILL, T_TRUE, T_FALSE, T_LBRACKET, T_LBRACES, T_ID})){
-		EXPR();
-		ARGUMENTS1();
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void ARGUMENTS1(){
-	level++;
-	printlvl("ARGUMENTS1");
-	if(tok == T_RPARENS){
-		// epsilon
-	} else if(tok == T_COMMA){
-		match(T_COMMA);
-		EXPR();
-		ARGUMENTS1();
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void OBJECT(){
-	level++;
-	printlvl("OBJECT");
-	if(tok == T_LBRACKET){
-		match(T_LBRACKET);
-		OBJECT1();
-	} else if(tok == T_LBRACES){
-		match(T_LBRACES);
-		DICTIONARYINIT();
-		match(T_RBRACES);
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void OBJECT1(){
-	level++;
-	printlvl("OBJECT1");
-	if(tok == T_RBRACKET){
-		match(T_RBRACKET);
-	} else if(inside(tok,{T_NOT, T_MINUS, T_NEG, T_LPARENS, T_INT, T_FLOAT, T_STRING, T_NILL, T_TRUE, T_FALSE, T_LBRACKET, T_LBRACES, T_ID})){
-		ARRAYINIT();
-		match(T_RBRACKET);
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void ARRAYINIT(){
-	level++;
-	printlvl("ARRAYINIT");
-	if(inside(tok,{T_NOT, T_MINUS, T_NEG, T_LPARENS, T_INT, T_FLOAT, T_STRING, T_NILL, T_TRUE, T_FALSE, T_LBRACKET, T_LBRACES, T_ID})){
-		EXPR();
-		ARRAYINIT1();
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void ARRAYINIT1(){
-	level++;
-	printlvl("ARRAYINIT1");
-	if(tok == T_RBRACKET){
-		// epsilon
-	} else if(tok == T_COMMA){
-		match(T_COMMA);
-		EXPR();
-		ARRAYINIT1();
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void DICTIONARYINIT(){
-	level++;
-	printlvl("DICTIONARYINIT");
-	if(tok == T_ID){
-		match(T_ID);
-		match(T_COLON);
-		EXPR();
-		DICTIONARYINIT1();
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void DICTIONARYINIT1(){
-	level++;
-	printlvl("DICTIONARYINIT1");
-	if(tok == T_RBRACES){
-		// epsilon
-	} else if(tok == T_COMMA){
-		match(T_COMMA);
-		match(T_ID);
-		match(T_COLON);
-		EXPR();
-		DICTIONARYINIT1();
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-void BOOLEAN(){
-	level++;
-	printlvl("BOOLEAN");
-	if(tok == T_TRUE){
-		match(T_TRUE);
-	} else if(tok == T_FALSE){
-		match(T_FALSE);
-	} else {
-		printerror();
-	}
-	level--;
-}
-
-//
-//
-//
 

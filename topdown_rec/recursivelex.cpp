@@ -1,6 +1,6 @@
-#line 2 "reclex.cpp"
+#line 2 "recursivelex.cpp"
 
-#line 4 "reclex.cpp"
+#line 4 "recursivelex.cpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -577,12 +577,12 @@ int yylex();
 void printerror(){
 	if (p_error) {
 		fprintf(stderr, "Erro sintatico: linha %d, coluna %d\n", line, column);
-		fprintf(stderr, "Unexpected symbol %s (%s)\n", yytext, symbol_names[tok]);
+		fprintf(stderr, "Unexpected symbol '%s' (%s)\n", yytext, symbol_names[tok]);
 		while (tok != T_ENDL && tok != T_EOF) {
 			tok = yylex();
 		}
-		if(tok != T_EOF)
-			tok = yylex();
+		/*if(tok != T_EOF)
+			tok = yylex();*/
 		p_error = false;
 	}
 }
@@ -610,7 +610,7 @@ void white_advance()
 	}
 }
 
-#line 614 "reclex.cpp"
+#line 614 "recursivelex.cpp"
 
 #define INITIAL 0
 
@@ -831,7 +831,7 @@ YY_DECL
 #line 71 "recursivelex.lex"
 
 		/*** seção de regras ***/
-#line 835 "reclex.cpp"
+#line 835 "recursivelex.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1351,7 +1351,7 @@ YY_RULE_SETUP
 #line 377 "recursivelex.lex"
 ECHO;
 	YY_BREAK
-#line 1355 "reclex.cpp"
+#line 1355 "recursivelex.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2372,7 +2372,7 @@ void match(int symbol){
 		p_error = true;
 	} else if(p_error) {
 		fprintf(stderr,"Erro sintatico: linha %d, coluna %d\n", line, column);
-		fprintf(stderr,"Got %s (%s), expected %s\n", yytext, symbol_names[tok], symbol_names[exp]);
+		fprintf(stderr,"Got '%s' (%s), expected %s\n", yytext, symbol_names[tok], symbol_names[exp]);
 		while (tok != T_ENDL && tok != T_EOF) {
 			tok = yylex();
 		}

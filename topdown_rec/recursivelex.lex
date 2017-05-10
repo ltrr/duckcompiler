@@ -11,7 +11,7 @@ using namespace std;
 int line = 1;	// A linha do caractere corrente
 int column = 1;	// A coluna do caractere corrente
 int level = 0;
-int tok;
+int tok,exp;
 bool p_error = true;
 
 void printlvl(char* nt){
@@ -28,9 +28,19 @@ bool inside(int s, vector<int> symbols){
 	return false;
 }
 
+int yylex();
+
 void printerror(){
-	printf("Erro sintatico: linha %d, coluna %d\n", line, column);
-	printf("(got %s)\n", symbol_names[tok]);
+	if (p_error) {
+		fprintf(stderr, "Erro sintatico: linha %d, coluna %d\n", line, column);
+		fprintf(stderr, "Unexpected symbol '%s' (%s)\n", yytext, symbol_names[tok]);
+		while (tok != T_ENDL && tok != T_EOF) {
+			tok = yylex();
+		}
+		/*if(tok != T_EOF)
+			tok = yylex();*/
+		p_error = false;
+	}
 }
 
 void match(int symbol);
@@ -61,7 +71,7 @@ void white_advance()
 %%
 		/*** seção de regras ***/
 (\/\/)(.*)[\n] {
-    printf("Comentário: %s\n", yytext);
+    //printf("Comentário: %s\n", yytext);
     advance();
 }
 
@@ -144,7 +154,7 @@ void white_advance()
 }
 
 "do" {
-	 printf("DO\n");
+	// printf("DO\n");
 	advance();
 	return T_DO;
 }
@@ -207,6 +217,18 @@ void white_advance()
 	// printf(" ] \n");
 	advance();
 	return T_RBRACKET;
+}
+
+"{" {
+	// printf(" { \n");
+	advance();
+	return T_LBRACES;
+}
+
+"}" {
+	// printf(" } \n");
+	advance();
+	return T_RBRACES;
 }
 
 "==" {
@@ -319,7 +341,7 @@ void white_advance()
 
 (\"[^\"\n]*\")|(\'[^\'\n]*\') {
 	// printf("String: %s\n", yytext);
-	advance();
+	white_advance();
 	return T_STRING;
 }
 
@@ -342,12 +364,13 @@ void white_advance()
 
 <<EOF>>	{
 		//printf("Fim do arquivo.\n");
+		//match(T_EOF);
 		return T_EOF;
 	}
 
 . {
-	printf("Erro Lexico: %s\n", yytext);
-	printf("Linha %d, coluna %d\n", line, column);
+	fprintf(stderr,"Erro Lexico: %s\n", yytext);
+	fprintf(stderr,"Linha %d, coluna %d\n", line, column);
 	advance();
 }
 
@@ -363,17 +386,22 @@ int main(void)
 int yywrap(){ return 1; }
 
 void match(int symbol){
+	exp = symbol;
 	if(symbol == tok){
 		level++;
 		printlvl(yytext);
 		level--;
-		tok = yylex();
-	} else if(perror) {
-		printerror();
+		p_error = true;
+	} else if(p_error) {
+		fprintf(stderr,"Erro sintatico: linha %d, coluna %d\n", line, column);
+		fprintf(stderr,"Got '%s' (%s), expected %s\n", yytext, symbol_names[tok], symbol_names[exp]);
+		while (tok != T_ENDL && tok != T_EOF) {
+			tok = yylex();
+		}
 		p_error = false;
 	}
-	if(symbol == T_ENDL && !p_error)
-		p_error = true;
+	if (tok != T_EOF)
+		tok = yylex();
 }
 
 // ----- Seção de código das funções de recursão do analisador
