@@ -1,11 +1,29 @@
 %{
 #include <iostream>
 
+#include "stringtree.h"
+
 int yylex();
 void yyerror(const char*);
 
 extern int line; 
 extern int column;
+
+std::ostream& pprint(std::ostream& os, const StringTree& tree, int level) {
+	for (int i = 0; i < level; i++) {
+		os << " ";
+	}
+	os << tree.value << std::endl;
+	for (auto child : tree.children) {
+		pprint(os, child, level + 1);
+	}
+	return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const StringTree& tree) {
+	return pprint(os, tree, 0);
+}
+
 %}
 
 %token T_IMPORT "import"
@@ -58,133 +76,146 @@ extern int column;
 
 %%
 
-program	: stmtlist ;
+program	: stmtlist { $$ = StringTree("program", { $1 });
+                     std::cout << $$; };
 
-stmtlist	: %empty
-		| stmt stmtlist
+stmtlist	: %empty { $$ = StringTree("stmtlist"); }
+		| stmt stmtlist { $$ = StringTree("stmtlist", { $1, $2 }); }
 		;
 
-stmt	: "import" T_ID T_ENDL
-	| T_ENDL
-	| expr T_ENDL
-	| assignment T_ENDL
-	| functiondef T_ENDL
-	| if T_ENDL
-	| forloop T_ENDL
-	| whileloop T_ENDL
-	| indefloop T_ENDL
-	| "return" expr T_ENDL
-	| "break" T_ENDL
-	| "continue" T_ENDL
+stmt	: "import" T_ID T_ENDL { $$ = StringTree("stmt", { $1, $2, $3 }); }
+	| T_ENDL { $$ = StringTree("stmt", { $1 }); }
+	| expr T_ENDL { $$ = StringTree("stmt", { $1, $2 }); }
+	| assignment T_ENDL { $$ = StringTree("stmt", { $1, $2 }); }
+	| functiondef T_ENDL { $$ = StringTree("stmt", { $1, $2 }); }
+	| if T_ENDL { $$ = StringTree("stmt", { $1, $2 }); }
+	| forloop T_ENDL { $$ = StringTree("stmt", { $1, $2 }); }
+	| whileloop T_ENDL { $$ = StringTree("stmt", { $1, $2 }); }
+	| indefloop T_ENDL { $$ = StringTree("stmt", { $1, $2 }); }
+	| "return" expr T_ENDL { $$ = StringTree("stmt", { $1, $2, $3 }); }
+	| "break" T_ENDL { $$ = StringTree("stmt", { $1, $2 }); }
+	| "continue" T_ENDL { $$ = StringTree("stmt", { $1, $2 }); }
 	;
 
-functiondef	: "function" T_ID parameters T_ENDL stmtlist "end" ;
+functiondef	: "function" T_ID parameters T_ENDL stmtlist "end"
+                    { $$ = StringTree("functiondef", { $1, $2, $3, $4, $5, $6 }); } ;
 
-parameters	: %empty
-		| "(" ")"
-		| "(" paramdecl ")"
+parameters	: %empty { $$ = StringTree("parameters"); }
+		| "(" ")" { $$ = StringTree("parameters", { $1, $2 }); }
+		| "(" paramdecl ")" { $$ = StringTree("parameters", { $1, $2, $3 }); }
 		;
 
-paramdecl	: T_ID
-		| paramdecl "," T_ID
+paramdecl	: T_ID { $$ = StringTree("paramdecl", { $1 }); }
+		| paramdecl "," T_ID { $$ = StringTree("paramdecl", { $1, $2, $3 }); }
 		;
 
-if	: "if" condition "then" T_ENDL stmtlist elseif ;
-
-elseif	: "else" T_ENDL stmtlist "end"
-	| "else" if
-	| "end"
+if	: "if" condition "then" T_ENDL stmtlist elseif
+	   { $$ = StringTree("if", { $1, $2, $3, $4, $5, $6 }); }
 	;
 
-forloop	: "for" T_ID "=" arithmetic "to" arithmetic "do" T_ENDL stmtlist "loop" ;
-
-whileloop	: "while" condition "do" T_ENDL stmtlist "loop" ;
-
-indefloop	: "iterate" T_ENDL stmtlist "loop" ;
-
-assignment	: lvalue "=" assignment
-		| lvalue "=" condition
-		;
-
-expr	: condition
+elseif	: "else" T_ENDL stmtlist "end" { $$ = StringTree("elseif", { $1, $2, $3, $4 }); }
+	| "else" if { $$ = StringTree("elseif", { $1, $2 }); }
+	| "end" { $$ = StringTree("elseif", { $1 }); }
 	;
 
-lvalue	: T_ID
-	| reference "." T_ID
-	| reference "[" expr "]"
+forloop	: "for" T_ID "=" arithmetic "to" arithmetic "do" T_ENDL stmtlist "loop" 
+  	  { $$ = StringTree("forloop", { $1, $2, $3, $4, $5, $6, $7, $8, $9, $10 }); }
 	;
 
-reference	: lvalue
-		| reference "(" ")"
-		| reference "(" arguments ")"
+whileloop	: "while" condition "do" T_ENDL stmtlist "loop" 
+		  { $$ = StringTree("whileloop", { $1, $2, $3, $4, $5, $6 }); }
 		;
 
-arguments	: arguments "," expr
-		| expr
+indefloop	: "iterate" T_ENDL stmtlist "loop" 
+		  { $$ = StringTree("indefloop", { $1, $2, $3, $4 }); }
 		;
 
-condition	: condition "and" logic
-		| condition "or" logic
-		| logic
+assignment	: lvalue "=" assignment { $$ = StringTree("assignment", { $1, $2, $3 }); }
+		| lvalue "=" condition { $$ = StringTree("assignment", { $1, $2, $3 }); }
 		;
 
-logic	: "not" comparison
-	| comparison
+expr	: condition { $$ = StringTree("expr", { $1 }); }
 	;
 
-comparison	: comparison "==" arithmetic
-		| comparison "!=" arithmetic
-		| comparison "<" arithmetic
-		| comparison ">" arithmetic
-		| comparison "<=" arithmetic
-		| comparison ">=" arithmetic
-		| arithmetic
-		;
-
-arithmetic	: arithmetic "+" term
-		| arithmetic "-" term
-		| term
-		;
-
-term	: term "*" factor
-	| term "/" factor
-	| factor
+lvalue	: T_ID { $$ = StringTree("lvalue", { $1 }); }
+	| reference "." T_ID { $$ = StringTree("lvalue", { $1, $2, $3 }); }
+	| reference "[" expr "]" { $$ = StringTree("lvalue", { $1, $2, $3, $4 }); }
 	;
 
-factor	: "-" factor
-	| "!" factor
-	| final
-	;
-
-final	: "(" expr ")"
-	| boolean
-	| T_INT
-	| T_FLOAT
-	| T_STRING
-	| object
-	| reference
-	;
-
-object	: "[" "]"
-	| "[" arrayinit "]"
-	| "[" dictinit "]"
-	;
-
-arrayinit	: arrayinit "," expr
-		| expr
+reference	: lvalue { $$ = StringTree("reference", { $1 }); }
+		| reference "(" ")" { $$ = StringTree("reference", { $1, $2, $3 }); }
+		| reference "(" arguments ")" { $$ = StringTree("reference", { $1, $2, $3, $4 }); }
 		;
 
-dictinit	: dictinit "," T_ID ":" expr
-		| T_ID ":" expr
+arguments	: arguments "," expr { $$ = StringTree("arguments", { $1, $2, $3 }); }
+		| expr { $$ = StringTree("arguments", { $1 }); }
 		;
 
-boolean : "true" | "false" ;
+condition	: condition "and" logic { $$ = StringTree("condition", { $1, $2, $3 }); }
+		| condition "or" logic { $$ = StringTree("condition", { $1, $2, $3 }); }
+		| logic { $$ = StringTree("condition", { $1 }); }
+		;
+
+logic	: "not" comparison { $$ = StringTree("logic", { $1, $2 }); }
+	| comparison { $$ = StringTree("logic", { $1 }); }
+	;
+
+comparison	: comparison "==" arithmetic { $$ = StringTree("comparison", { $1, $2, $3 }); }
+		| comparison "!=" arithmetic { $$ = StringTree("comparison", { $1, $2, $3 }); }
+		| comparison "<" arithmetic { $$ = StringTree("comparison", { $1, $2, $3 }); }
+		| comparison ">" arithmetic { $$ = StringTree("comparison", { $1, $2, $3 }); }
+		| comparison "<=" arithmetic { $$ = StringTree("comparison", { $1, $2, $3 }); }
+		| comparison ">=" arithmetic { $$ = StringTree("comparison", { $1, $2, $3 }); }
+		| arithmetic { $$ = StringTree("comparison", { $1 }); }
+		;
+
+arithmetic	: arithmetic "+" term { $$ = StringTree("arithmetic", { $1, $2, $3 }); }
+		| arithmetic "-" term { $$ = StringTree("arithmetic", { $1, $2, $3 }); }
+		| term { $$ = StringTree("arithmetic", { $1 }); }
+		;
+
+term	: term "*" factor { $$ = StringTree("term", { $1, $2, $3 }); }
+	| term "/" factor { $$ = StringTree("term", { $1, $2, $3 }); }
+	| factor { $$ = StringTree("term", { $1 }); }
+	;
+
+factor	: "-" factor { $$ = StringTree("factor", { $1, $2 }); }
+	| "!" factor { $$ = StringTree("factor", { $1, $2 }); }
+	| final { $$ = StringTree("factor", { $1 }); }
+	;
+
+final	: "(" expr ")" { $$ = StringTree("final", { $1, $2, $3 }); }
+	| boolean { $$ = StringTree("final", { $1 }); }
+	| T_INT { $$ = StringTree("final", { $1 }); }
+	| T_FLOAT { $$ = StringTree("final", { $1 }); }
+	| T_STRING { $$ = StringTree("final", { $1 }); }
+	| object { $$ = StringTree("final", { $1 }); }
+	| reference { $$ = StringTree("final", { $1 }); }
+	;
+
+object	: "[" "]" { $$ = StringTree("object", { $1, $2 }); }
+	| "[" arrayinit "]" { $$ = StringTree("object", { $1, $2, $3 }); }
+	| "[" dictinit "]" { $$ = StringTree("object", { $1, $2, $3 }); }
+	;
+
+arrayinit	: arrayinit "," expr { $$ = StringTree("arrayinit", { $1, $2, $3 }); }
+		| expr { $$ = StringTree("arrayinit", { $1 }); }
+		;
+
+dictinit	: dictinit "," T_ID ":" expr { $$ = StringTree("dictinit", { $1, $2, $3, $4, $5 }); }
+		| T_ID ":" expr { $$ = StringTree("dictinit", { $1, $2, $3 }); }
+		;
+
+boolean : "true" { $$ = StringTree("boolean", { $1 }); }
+	| "false" { $$ = StringTree("boolean", { $1 }); }
+	; 
 
 %%
 
 int main()
 {
 	yyparse();
+	// std::cout << ans << std::endl;
 	return 0;
 }
 
