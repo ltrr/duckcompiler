@@ -1,30 +1,37 @@
 // Exemplo sintatico
-import mod
+import mod nod
 
 a = 2
+m = [1, 2, 4, 5, , ]
+n = [a: 1, : 2, c: 3]
+
 b()
+
 function f()
 	function g(a, b, c)
 		if a == b then
 			return c
 		else if a == c then
-			break
+			break dance
 		else
 			continue
 		end
 	end	
 end
-for i = 2+2 to 5 do
+
+for i = 2+2 to 5
 	g(1, 2, 3)
 loop
+
 while p and q or r and not s do
-	x = (x + 1) / 9 - 3 * 7 + 4
+	x = (x + ) / 9 - 3 * 7 + 4
 	y[a] = 10
 	z.a.b[2].c = 12
 loop
+
+
 iterate
-	duck.print("quack")
+	duck.print("quack"
 loop
-m = [1, 2, 4, 5, 6]
-n = [a: 1, b: 2, c: 3]
+
 

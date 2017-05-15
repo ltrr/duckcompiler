@@ -24,6 +24,7 @@ std::ostream& operator<<(std::ostream& os, const StringTree& tree) {
 	return pprint(os, tree, 0);
 }
 
+bool has_error = false;
 %}
 
 %token T_IMPORT "import"
@@ -77,7 +78,8 @@ std::ostream& operator<<(std::ostream& os, const StringTree& tree) {
 %%
 
 program	: stmtlist { $$ = StringTree("program", { $1 });
-                     std::cout << $$; };
+		     if (!has_error) std::cout << $$; }
+	;
 
 stmtlist	: %empty { $$ = StringTree("stmtlist"); }
 		| stmt stmtlist { $$ = StringTree("stmtlist", { $1, $2 }); }
@@ -95,6 +97,7 @@ stmt	: "import" T_ID T_ENDL { $$ = StringTree("stmt", { $1, $2, $3 }); }
 	| "return" expr T_ENDL { $$ = StringTree("stmt", { $1, $2, $3 }); }
 	| "break" T_ENDL { $$ = StringTree("stmt", { $1, $2 }); }
 	| "continue" T_ENDL { $$ = StringTree("stmt", { $1, $2 }); }
+	| error T_ENDL
 	;
 
 functiondef	: "function" T_ID parameters T_ENDL stmtlist "end"
@@ -111,6 +114,7 @@ paramdecl	: T_ID { $$ = StringTree("paramdecl", { $1 }); }
 
 if	: "if" condition "then" T_ENDL stmtlist elseif
 	   { $$ = StringTree("if", { $1, $2, $3, $4, $5, $6 }); }
+	| "if" condition "then" error T_ENDL stmtlist elseif
 	;
 
 elseif	: "else" T_ENDL stmtlist "end" { $$ = StringTree("elseif", { $1, $2, $3, $4 }); }
@@ -120,10 +124,12 @@ elseif	: "else" T_ENDL stmtlist "end" { $$ = StringTree("elseif", { $1, $2, $3, 
 
 forloop	: "for" T_ID "=" arithmetic "to" arithmetic "do" T_ENDL stmtlist "loop" 
   	  { $$ = StringTree("forloop", { $1, $2, $3, $4, $5, $6, $7, $8, $9, $10 }); }
+	| "for" T_ID "=" arithmetic "to" arithmetic "do" error T_ENDL stmtlist "loop" 
 	;
 
 whileloop	: "while" condition "do" T_ENDL stmtlist "loop" 
 		  { $$ = StringTree("whileloop", { $1, $2, $3, $4, $5, $6 }); }
+		| "while" condition "do" error T_ENDL stmtlist "loop" 
 		;
 
 indefloop	: "iterate" T_ENDL stmtlist "loop" 
@@ -145,6 +151,7 @@ lvalue	: T_ID { $$ = StringTree("lvalue", { $1 }); }
 reference	: lvalue { $$ = StringTree("reference", { $1 }); }
 		| reference "(" ")" { $$ = StringTree("reference", { $1, $2, $3 }); }
 		| reference "(" arguments ")" { $$ = StringTree("reference", { $1, $2, $3, $4 }); }
+		| reference "(" arguments error ")"
 		;
 
 arguments	: arguments "," expr { $$ = StringTree("arguments", { $1, $2, $3 }); }
@@ -184,7 +191,7 @@ factor	: "-" factor { $$ = StringTree("factor", { $1, $2 }); }
 	| final { $$ = StringTree("factor", { $1 }); }
 	;
 
-final	: "(" expr ")" { $$ = StringTree("final", { $1, $2, $3 }); }
+final	: "(" expr ")" { $$ = StringTree("final", { $1, $2, $3 }); }	
 	| boolean { $$ = StringTree("final", { $1 }); }
 	| T_INT { $$ = StringTree("final", { $1 }); }
 	| T_FLOAT { $$ = StringTree("final", { $1 }); }
@@ -196,6 +203,8 @@ final	: "(" expr ")" { $$ = StringTree("final", { $1, $2, $3 }); }
 object	: "[" "]" { $$ = StringTree("object", { $1, $2 }); }
 	| "[" arrayinit "]" { $$ = StringTree("object", { $1, $2, $3 }); }
 	| "[" dictinit "]" { $$ = StringTree("object", { $1, $2, $3 }); }
+	| "[" arrayinit error "]"
+	| "[" dictinit error "]"
 	;
 
 arrayinit	: arrayinit "," expr { $$ = StringTree("arrayinit", { $1, $2, $3 }); }
@@ -215,12 +224,12 @@ boolean : "true" { $$ = StringTree("boolean", { $1 }); }
 int main()
 {
 	yyparse();
-	// std::cout << ans << std::endl;
 	return 0;
 }
 
 void yyerror(const char *s)
 {
+	has_error = true;
 	std::cerr << s << std::endl;
 	std::cerr << "on line " << line
                   << ", column " << column
