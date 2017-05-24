@@ -1,0 +1,40 @@
+halt # end program
+
+# adressing 
+lit ADDR LITERAL # t1 = literal
+load ADDR IDENTIFIER # t1 = var
+save ADDR IDENTIFIER # var = t1
+
+# indexing
+getindex ADDR ADDR ADDR # t1 = t2[t3] 
+setindex ADDR ADDR ADDR # t1[t2] = t3
+
+# jumps
+label LABEL 
+goto LABEL
+ifgoto ADDR LABEL
+call ADDR
+
+# stack manipulation (used in function calls)
+push ADDR # add t1 to top of stack
+pop ADDR  # pop top of stack, and save in t1
+clear # empty stack
+
+# unary operators
+inv ADDR ADDR # t1 = -t2
+neg ADDR ADDR # t1 = !t2
+
+# binary operators
+add ADDR ADDR ADDR # t1 = t2 + t3
+sub ADDR ADDR ADDR # t1 = t2 - t3
+mul ADDR ADDR ADDR # t1 = t2 * t3
+div ADDR ADDR ADDR # t1 = t2 / t3
+eq  ADDR ADDR ADDR # t1 = t2 == t3
+neq ADDR ADDR ADDR # t1 = t2 != t3
+lt  ADDR ADDR ADDR # t1 = t2 < t3
+le  ADDR ADDR ADDR # t1 = t2 <= t3
+gt  ADDR ADDR ADDR # t1 = t2 > t3
+ge  ADDR ADDR ADDR # t1 = t2 >= t3
+
+
+
