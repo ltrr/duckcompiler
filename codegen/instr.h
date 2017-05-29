@@ -1,10 +1,13 @@
 #ifndef DUCK_INSTR_H_
 #define DUCK_INSTR_H_
 
+#include <iostream>
 #include <string>
 #include <vector>
 #include <memory>
 
+
+/////////////////////////////
 struct tuple4 {
 	std::string instr;
 	std::string addr1, addr2, addr3;
@@ -13,6 +16,10 @@ struct tuple4 {
 		instr(instr), addr1(addr1), addr2(addr2), addr3(addr3) {}
 };
 
+typedef std::vector<tuple4> tuple4_vec;
+
+
+/////////////////////////////
 struct context {
 	std::string hook_addr, break_label, continue_label;
 
@@ -20,12 +27,35 @@ struct context {
 		hook_addr(hook_addr), break_label(break_label), continue_label(continue_label) {}
 };
 
-typedef std::vector<tuple4> tuple4_vec;
 
+/////////////////////////////
 class CodeTree {
+public:
 	virtual tuple4_vec genCode(context c);
 };
 
 typedef std::shared_ptr<CodeTree> CodeTreePtr;
 
-#endif
+
+/////////////////////////////
+class BinOp : public CodeTree {
+public:
+	BinOp(std::string instr, CodeTreePtr left, CodeTreePtr right) :
+		instr(instr), left(left), right(right) {}
+
+	tuple4_vec genCode(context c);
+
+private:
+	std::string instr;
+	CodeTreePtr left;
+	CodeTreePtr right;
+};
+
+
+/////////////////////////////
+std::string genAddr();
+std::string genLabel();
+void printTuples(std::ostream& os, const tuple4_vec& v);
+
+
+#endif // DUCK_INSTR_H_
