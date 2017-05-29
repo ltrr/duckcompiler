@@ -42,3 +42,10 @@ public:
 private:
 	bool value;
 };
+
+
+class NillLit : public CodeTree {
+public:
+	NillLit() {}
+	tuple4_vec genCode(context c);
+};
