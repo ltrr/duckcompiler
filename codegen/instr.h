@@ -12,6 +12,8 @@ struct tuple4 {
 	std::string instr;
 	std::string addr1, addr2, addr3;
 
+	tuple4() : instr(""), addr1(""), addr2(""), addr3("") {}
+
 	tuple4(std::string instr, std::string addr1, std::string addr2, std::string addr3) :
 		instr(instr), addr1(addr1), addr2(addr2), addr3(addr3) {}
 };
