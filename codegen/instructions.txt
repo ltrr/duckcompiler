@@ -1,16 +1,16 @@
 halt # end program
 
-# adressing 
+# adressing
 lit ADDR LITERAL # t1 = literal
 load ADDR IDENTIFIER # t1 = var
 save ADDR IDENTIFIER # var = t1
 
 # indexing
-getindex ADDR ADDR ADDR # t1 = t2[t3] 
+getindex ADDR ADDR ADDR # t1 = t2[t3]
 setindex ADDR ADDR ADDR # t1[t2] = t3
 
 # jumps
-label LABEL 
+label LABEL
 goto LABEL
 ifgoto ADDR LABEL
 call ADDR
@@ -24,6 +24,7 @@ clear # empty stack
 # unary operators
 inv ADDR ADDR # t1 = -t2
 neg ADDR ADDR # t1 = !t2
+not ADDR ADDR # t1 = not t2
 
 # binary operators
 add ADDR ADDR ADDR # t1 = t2 + t3
@@ -36,6 +37,5 @@ lt  ADDR ADDR ADDR # t1 = t2 < t3
 le  ADDR ADDR ADDR # t1 = t2 <= t3
 gt  ADDR ADDR ADDR # t1 = t2 > t3
 ge  ADDR ADDR ADDR # t1 = t2 >= t3
-
-
-
+and ADDR ADDR ADDR # t1 = t2 and t3
+or  ADDR ADDR ADDR # t1 = t2 or t3

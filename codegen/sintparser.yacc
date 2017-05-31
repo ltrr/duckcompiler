@@ -2,6 +2,7 @@
 #include <iostream>
 #include "instr.h"
 #include "literal.h"
+#include "statement.h"
 
 int yylex();
 void yyerror(const char*);
@@ -64,15 +65,15 @@ bool has_error = false;
 
 %%
 
-program	: stmtlist;
+program	: stmtlist	{ onFinish($1); };
 
-stmtlist	: %empty
-		| stmt stmtlist
+stmtlist	: %empty { $$ = CodeTreePtr(new EmptyCodeTree()); }
+		| stmt stmtlist { $$ = CodeTreePtr(new StmtList($1, $2)); }
 		;
 
 stmt	: "import" T_ID T_ENDL
-	| T_ENDL
-	| expr T_ENDL
+	| T_ENDL { $$ = CodeTreePtr(new EmptyCodeTree()); }
+	| expr T_ENDL { $$ = $1; }
 	| assignment T_ENDL
 	| functiondef T_ENDL
 	| if T_ENDL
@@ -121,7 +122,7 @@ assignment	: lvalue "=" assignment
 		| lvalue "=" condition
 		;
 
-expr	: condition
+expr	: condition { $$ = $1; }
 	;
 
 lvalue	: T_ID
@@ -141,11 +142,11 @@ arguments	: arguments "," expr
 
 condition	: condition "and" logic
 		| condition "or" logic
-		| logic
+		| logic { $$ = $1; }
 		;
 
 logic	: "not" comparison
-	| comparison
+	| comparison { $$ = $1; }
 	;
 
 comparison	: comparison "==" arithmetic
@@ -154,29 +155,29 @@ comparison	: comparison "==" arithmetic
 		| comparison ">" arithmetic
 		| comparison "<=" arithmetic
 		| comparison ">=" arithmetic
-		| arithmetic
+		| arithmetic { $$ = $1; }
 		;
 
-arithmetic	: arithmetic "+" term
+arithmetic	: arithmetic "+" term { $$ = CodeTreePtr(new BinOp("add", $1, $3)); }
 		| arithmetic "-" term
-		| term
+		| term { $$ = $1; }
 		;
 
 term	: term "*" factor
 	| term "/" factor
-	| factor
+	| factor { $$ = $1; }
 	;
 
 factor	: "-" factor
 	| "!" factor
-	| final
+	| final { $$ = $1; }
 	;
 
 final	: "(" expr ")"
-	| boolean
-	| T_INT
-	| T_FLOAT
-	| T_STRING
+	| boolean { $$ = $1; }
+	| T_INT { $$ = $1; }
+	| T_FLOAT { $$ = $1; }
+	| T_STRING { $$ = $1; }
 	| object
 	| reference
 	;

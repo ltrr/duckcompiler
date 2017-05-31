@@ -25,6 +25,8 @@ typedef std::vector<tuple4> tuple4_vec;
 struct context {
 	std::string hook_addr, break_label, continue_label;
 
+	context() : hook_addr(""), break_label(""), continue_label("") {}
+
 	context(std::string hook_addr, std::string break_label, std::string continue_label) :
 		hook_addr(hook_addr), break_label(break_label), continue_label(continue_label) {}
 };
@@ -37,6 +39,12 @@ public:
 };
 
 typedef std::shared_ptr<CodeTree> CodeTreePtr;
+
+
+/////////////////////////////
+class EmptyCodeTree : public CodeTree {
+	tuple4_vec genCode(context c);
+};
 
 
 /////////////////////////////
@@ -59,5 +67,8 @@ std::string genAddr();
 std::string genLabel();
 void printTuples(std::ostream& os, const tuple4_vec& v);
 
+
+////////////////////////////
+void onFinish(CodeTreePtr program); // implemented by main
 
 #endif // DUCK_INSTR_H_

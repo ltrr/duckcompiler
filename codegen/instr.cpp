@@ -7,6 +7,12 @@ tuple4_vec CodeTree::genCode(context c) {
 
 
 /////////////////////////////
+tuple4_vec EmptyCodeTree::genCode(context c) {
+	return tuple4_vec();
+}
+
+
+/////////////////////////////
 tuple4_vec BinOp::genCode(context c) {
   std::string hook;
   if (c.hook_addr.empty())
