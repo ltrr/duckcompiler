@@ -63,6 +63,20 @@ private:
 
 
 /////////////////////////////
+class UnOp : public CodeTree {
+public:
+	UnOp(std::string instr, CodeTreePtr child) :
+		instr(instr), child(child) {}
+
+	tuple4_vec genCode(context c);
+
+private:
+	std::string instr;
+	CodeTreePtr child;
+};
+
+
+/////////////////////////////
 std::string genAddr();
 std::string genLabel();
 void printTuples(std::ostream& os, const tuple4_vec& v);
