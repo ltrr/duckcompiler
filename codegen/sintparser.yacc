@@ -72,7 +72,7 @@ stmtlist	: %empty { $$ = CodeTreePtr(new EmptyCodeTree()); }
 		;
 
 stmt	: "import" T_ID T_ENDL
-	| T_ENDL
+	| T_ENDL { $$ = CodeTreePtr(new EmptyCodeTree()); }
 	| expr T_ENDL { $$ = $1; }
 	| assignment T_ENDL
 	| functiondef T_ENDL
@@ -80,7 +80,7 @@ stmt	: "import" T_ID T_ENDL
 	| forloop T_ENDL
 	| whileloop T_ENDL
 	| indefloop T_ENDL
-	| "return" expr T_ENDL
+	| "return" expr T_ENDL { $$ = CodeTreePtr(new ReturnStmt($2)); }
 	| "break" T_ENDL
 	| "continue" T_ENDL
 	| error T_ENDL
@@ -131,13 +131,13 @@ lvalue	: T_ID { $$ = $1; }
 	;
 
 reference	: lvalue { $$ = $1; }
-		| reference "(" ")"
-		| reference "(" arguments ")"
+		| reference "(" ")" { $$ = CodeTreePtr(new FunctionCall($1)); }
+		| reference "(" arguments ")" { $$ = CodeTreePtr(new FunctionCall($1, $3)); }
 		| reference "(" arguments error ")"
 		;
 
-arguments	: arguments "," expr
-		| expr
+arguments	: arguments "," expr { $$ = CodeTreePtr(new FunctionArgs($3, $1)); }
+		| expr { $$ = CodeTreePtr(new FunctionArgs($1)); }
 		;
 
 condition	: condition "and" logic
@@ -173,7 +173,7 @@ factor	: "-" factor
 	| final { $$ = $1; }
 	;
 
-final	: "(" expr ")"
+final	: "(" expr ")" { $$ = $2; }
 	| boolean { $$ = $1; }
 	| T_INT { $$ = $1; }
 	| T_FLOAT { $$ = $1; }

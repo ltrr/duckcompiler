@@ -6,7 +6,7 @@
 
 #include "instr.h"
 #include "literal.h"
-#include "statement.h"
+#include "lvalue.h"
 #include "tokens.h"
 
 int line = 1;	// A linha do caractere corrente

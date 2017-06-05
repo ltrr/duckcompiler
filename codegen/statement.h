@@ -49,13 +49,46 @@ private:
 
 
 /////////////////////////////
-class Identifier : public CodeTree {
+class FunctionCall : public CodeTree {
 public:
-	Identifier(std::string name) : name(name) {}
+	FunctionCall(CodeTreePtr reference, CodeTreePtr args) :
+		reference(reference), args(args) {}
+
+	FunctionCall(CodeTreePtr reference) :
+		reference(reference) {}
 
 	tuple4_vec genCode(context c);
 private:
-	std::string name;
+	CodeTreePtr reference;
+	CodeTreePtr args;
 };
+
+
+/////////////////////////////
+class FunctionArgs : public CodeTree {
+public:
+	FunctionArgs(CodeTreePtr expr, CodeTreePtr next) :
+		expr(expr), next(next) {}
+
+	FunctionArgs(CodeTreePtr expr) :
+		expr(expr) {}
+
+	tuple4_vec genCode(context c);
+private:
+	CodeTreePtr expr;
+	CodeTreePtr next;
+};
+
+
+/////////////////////////////
+class ReturnStmt : public CodeTree {
+public:
+	ReturnStmt(CodeTreePtr expr) : expr(expr) {}
+
+	tuple4_vec genCode(context c);
+private:
+	CodeTreePtr expr;
+};
+
 
 #endif

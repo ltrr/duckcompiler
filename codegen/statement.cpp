@@ -52,11 +52,53 @@ tuple4_vec FunctionParams::genCode(context c) {
 
 
 /////////////////////////////
-tuple4_vec Identifier::genCode(context c) {
-    if (c.mode == Mode::Load) {
-        return { tuple4("load", c.hook_addr, this->name, "") };
+tuple4_vec FunctionCall::genCode(context c) {
+
+    auto hook = genAddr();
+    context ref_subcontext(hook, Mode::Load);
+    tuple4_vec ref_instr = this->reference->genCode(ref_subcontext);
+
+    if (args) {
+        tuple4_vec args_instr = this->args->genCode(c);
+        ref_instr.insert(end(ref_instr), begin(args_instr), end(args_instr));
     }
-    else {
-        return { tuple4("save", c.hook_addr, this->name, "") };
+
+    ref_instr.push_back( tuple4("call", hook, "", "") );
+    if (!c.hook_addr.empty())
+        ref_instr.push_back( tuple4("pop", c.hook_addr, "", "") );
+
+    return ref_instr;
+}
+
+
+/////////////////////////////
+tuple4_vec FunctionArgs::genCode(context c) {
+
+    tuple4_vec instr;
+    if (next) {
+        instr = next->genCode(c);
     }
+
+    auto hook = genAddr();
+
+    context expr_subcontext(hook, Mode::Load);
+    tuple4_vec expr_instr = this->expr->genCode(expr_subcontext);
+    instr.insert(end(instr), begin(expr_instr), end(expr_instr));
+
+    instr.push_back(tuple4("push", hook, "", ""));
+
+    return instr;
+}
+
+
+/////////////////////////////
+tuple4_vec ReturnStmt::genCode(context c) {
+    auto hook = genAddr();
+    context expr_subcontext(hook, Mode::Load);
+    tuple4_vec expr_instr = this->expr->genCode(expr_subcontext);
+
+    expr_instr.push_back(tuple4("push", hook, "", ""));
+    expr_instr.push_back(tuple4("return", "", "", ""));
+
+    return expr_instr;
 }
