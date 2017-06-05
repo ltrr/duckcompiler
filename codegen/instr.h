@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <map>
 
 
 /////////////////////////////
@@ -22,13 +23,19 @@ typedef std::vector<tuple4> tuple4_vec;
 
 
 /////////////////////////////
+enum class Mode { Save, Load };
+
 struct context {
 	std::string hook_addr, break_label, continue_label;
+	Mode mode;
 
 	context() : hook_addr(""), break_label(""), continue_label("") {}
 
 	context(std::string hook_addr, std::string break_label, std::string continue_label) :
-		hook_addr(hook_addr), break_label(break_label), continue_label(continue_label) {}
+		hook_addr(hook_addr), break_label(break_label), continue_label(continue_label), mode(Mode::Load) {}
+
+	context(std::string hook_addr, Mode mode) :
+		hook_addr(hook_addr), mode(mode) {}
 };
 
 
@@ -70,5 +77,7 @@ void printTuples(std::ostream& os, const tuple4_vec& v);
 
 ////////////////////////////
 void onFinish(CodeTreePtr program); // implemented by main
+
+extern std::map<std::string, tuple4_vec> function_defs;
 
 #endif // DUCK_INSTR_H_

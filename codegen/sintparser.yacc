@@ -72,7 +72,7 @@ stmtlist	: %empty { $$ = CodeTreePtr(new EmptyCodeTree()); }
 		;
 
 stmt	: "import" T_ID T_ENDL
-	| T_ENDL { $$ = CodeTreePtr(new EmptyCodeTree()); }
+	| T_ENDL
 	| expr T_ENDL { $$ = $1; }
 	| assignment T_ENDL
 	| functiondef T_ENDL
@@ -86,16 +86,16 @@ stmt	: "import" T_ID T_ENDL
 	| error T_ENDL
 	;
 
-functiondef	: "function" T_ID parameters T_ENDL stmtlist "end"
+functiondef	: "function" T_ID parameters T_ENDL stmtlist "end" { $$ = CodeTreePtr(new FunctionDef($2, $3, $5)); }
             ;
 
-parameters	: %empty
-		| "(" ")"
-		| "(" paramdecl ")"
+parameters	: %empty { $$ = CodeTreePtr(new EmptyCodeTree()); }
+		| "(" ")" { $$ = CodeTreePtr(new EmptyCodeTree()); }
+		| "(" paramdecl ")" { $$ = $2; }
 		;
 
-paramdecl	: T_ID
-		| paramdecl "," T_ID
+paramdecl	: T_ID { $$ = CodeTreePtr(new FunctionParams($1)); }
+		| paramdecl "," T_ID { $$ = CodeTreePtr(new FunctionParams($3, $1)); }
 		;
 
 if	: "if" condition "then" T_ENDL stmtlist elseif
@@ -125,12 +125,12 @@ assignment	: lvalue "=" assignment
 expr	: condition { $$ = $1; }
 	;
 
-lvalue	: T_ID
+lvalue	: T_ID { $$ = $1; }
 	| reference "." T_ID
 	| reference "[" expr "]"
 	;
 
-reference	: lvalue
+reference	: lvalue { $$ = $1; }
 		| reference "(" ")"
 		| reference "(" arguments ")"
 		| reference "(" arguments error ")"
@@ -179,7 +179,7 @@ final	: "(" expr ")"
 	| T_FLOAT { $$ = $1; }
 	| T_STRING { $$ = $1; }
 	| object
-	| reference
+	| reference { $$ = $1; }
 	;
 
 object	: "[" "]"

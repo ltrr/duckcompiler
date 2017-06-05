@@ -6,6 +6,7 @@
 
 #include "instr.h"
 #include "literal.h"
+#include "statement.h"
 #include "tokens.h"
 
 int line = 1;	// A linha do caractere corrente
@@ -272,6 +273,7 @@ void white_advance()
 
 [a-zA-Z_][a-zA-Z0-9_]* {
 	advance();
+	yylval = CodeTreePtr(new Identifier(yytext));
 	return T_ID;
 }
 
