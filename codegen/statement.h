@@ -91,4 +91,17 @@ private:
 };
 
 
+/////////////////////////////
+class Assignment : public CodeTree {
+public:
+	Assignment(CodeTreePtr lvalue, CodeTreePtr expr)
+		: lvalue(lvalue), expr(expr) {}
+
+	tuple4_vec genCode(context c);
+private:
+	CodeTreePtr lvalue;
+	CodeTreePtr expr;
+};
+
+
 #endif

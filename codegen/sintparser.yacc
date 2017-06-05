@@ -3,6 +3,7 @@
 #include "instr.h"
 #include "literal.h"
 #include "statement.h"
+#include "lvalue.h"
 
 int yylex();
 void yyerror(const char*);
@@ -118,16 +119,16 @@ whileloop	: "while" condition "do" T_ENDL stmtlist "loop"
 indefloop	: "iterate" T_ENDL stmtlist "loop"
 			;
 
-assignment	: lvalue "=" assignment
-		| lvalue "=" condition
+assignment	: lvalue "=" assignment { $$ = CodeTreePtr(new Assignment($1, $3)); }
+		| lvalue "=" condition { $$ = CodeTreePtr(new Assignment($1, $3)); }
 		;
 
 expr	: condition { $$ = $1; }
 	;
 
 lvalue	: T_ID { $$ = $1; }
-	| reference "." T_ID
-	| reference "[" expr "]"
+	| reference "." T_ID { $$ = CodeTreePtr(new LValue($1, $3, true)); }
+	| reference "[" expr "]" { $$ = CodeTreePtr(new LValue($1, $3, false)); }
 	;
 
 reference	: lvalue { $$ = $1; }

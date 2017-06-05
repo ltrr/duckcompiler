@@ -102,3 +102,22 @@ tuple4_vec ReturnStmt::genCode(context c) {
 
     return expr_instr;
 }
+
+
+/////////////////////////////
+tuple4_vec Assignment::genCode(context c) {
+
+    auto hook = c.hook_addr;
+    if (hook.empty())
+        hook = genAddr();
+
+    context expr_subcontext(hook, Mode::Load);
+    tuple4_vec expr_instr = this->expr->genCode(expr_subcontext);
+
+    context lvalue_subcontext(hook, Mode::Save);
+    tuple4_vec lvalue_instr = this->lvalue->genCode(lvalue_subcontext);
+
+    expr_instr.insert(end(expr_instr), begin(lvalue_instr), end(lvalue_instr));
+
+    return expr_instr;
+}

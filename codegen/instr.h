@@ -23,7 +23,7 @@ typedef std::vector<tuple4> tuple4_vec;
 
 
 /////////////////////////////
-enum class Mode { Save, Load };
+enum class Mode { Save, Load, Lit };
 
 struct context {
 	std::string hook_addr, break_label, continue_label;

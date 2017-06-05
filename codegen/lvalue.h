@@ -14,4 +14,18 @@ private:
 };
 
 
+/////////////////////////////
+class LValue : public CodeTree {
+public:
+	LValue(CodeTreePtr reference, CodeTreePtr index, bool direct)
+		: reference(reference), index(index), direct(direct) {}
+
+	tuple4_vec genCode(context c);
+private:
+	CodeTreePtr reference;
+	CodeTreePtr index;
+	bool direct;
+};
+
+
 #endif // DUCK_LVALUE_H_
