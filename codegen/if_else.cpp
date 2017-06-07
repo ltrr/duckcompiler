@@ -20,7 +20,7 @@ tuple4_vec if_Tree::genCode(context c){
     tuple4_vec midd_v = this->midd->genCode(c_midd);
 
 
-   //elseif
+   //stmtlist else if
     std:: string addr3 = genAddr();
     context c_right = context (addr3, c.break_label, c.continue_label);
     tuple4_vec right_v = right->genCode(c_right);
