@@ -141,36 +141,36 @@ arguments	: arguments "," expr { $$ = CodeTreePtr(new FunctionArgs($3, $1)); }
 		| expr { $$ = CodeTreePtr(new FunctionArgs($1)); }
 		;
 
-condition	: condition "and" logic
-		| condition "or" logic
+condition	: condition "and" logic { $$ = CodeTreePtr(new BinOp("and", $1, $3)); }
+		| condition "or" logic { $$ = CodeTreePtr(new BinOp("or", $1, $3)); }
 		| logic { $$ = $1; }
 		;
 
-logic	: "not" comparison
+logic	: "not" comparison { $$ = CodeTreePtr(new UnOp("not", $2)); }
 	| comparison { $$ = $1; }
 	;
 
-comparison	: comparison "==" arithmetic
-		| comparison "!=" arithmetic
-		| comparison "<" arithmetic
-		| comparison ">" arithmetic
-		| comparison "<=" arithmetic
-		| comparison ">=" arithmetic
+comparison	: comparison "==" arithmetic { $$ = CodeTreePtr(new BinOp("eq", $1, $3)); }
+		| comparison "!=" arithmetic { $$ = CodeTreePtr(new BinOp("neq", $1, $3)); }
+		| comparison "<" arithmetic { $$ = CodeTreePtr(new BinOp("lt", $1, $3)); }
+		| comparison ">" arithmetic { $$ = CodeTreePtr(new BinOp("gt", $1, $3)); }
+		| comparison "<=" arithmetic { $$ = CodeTreePtr(new BinOp("le", $1, $3)); }
+		| comparison ">=" arithmetic { $$ = CodeTreePtr(new BinOp("ge", $1, $3)); }
 		| arithmetic { $$ = $1; }
 		;
 
 arithmetic	: arithmetic "+" term { $$ = CodeTreePtr(new BinOp("add", $1, $3)); }
-		| arithmetic "-" term
+		| arithmetic "-" term { $$ = CodeTreePtr(new BinOp("sub", $1, $3)); }
 		| term { $$ = $1; }
 		;
 
-term	: term "*" factor
-	| term "/" factor
+term	: term "*" factor { $$ = CodeTreePtr(new BinOp("mul", $1, $3)); }
+	| term "/" factor { $$ = CodeTreePtr(new BinOp("div", $1, $3)); }
 	| factor { $$ = $1; }
 	;
 
-factor	: "-" factor
-	| "!" factor
+factor	: "-" factor { $$ = CodeTreePtr(new UnOp("inv", $2)); }
+	| "!" factor { $$ = CodeTreePtr(new UnOp("neg", $2)); }
 	| final { $$ = $1; }
 	;
 
