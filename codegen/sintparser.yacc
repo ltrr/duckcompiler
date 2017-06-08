@@ -105,7 +105,7 @@ if	: "if" condition "then" T_ENDL stmtlist elseif { $$ = CodeTreePtr(new if_Tree
 
 elseif	: "else" T_ENDL stmtlist "end" { $$ = $3; }
 	| "else" if { $$ = $2; }
-	| "end"
+	| "end" { $$ = CodeTreePtr(new EmptyCodeTree()); }
 	;
 
 forloop	: "for" T_ID "=" arithmetic "to" arithmetic "do" T_ENDL stmtlist "loop"
@@ -179,23 +179,23 @@ final	: "(" expr ")" { $$ = $2; }
 	| T_INT { $$ = $1; }
 	| T_FLOAT { $$ = $1; }
 	| T_STRING { $$ = $1; }
-	| object
+	| object { $$ = $1; }
 	| reference { $$ = $1; }
 	;
 
 object	: "[" "]"
-	| "[" arrayinit "]"
-	| "[" dictinit "]"
+	| "[" arrayinit "]" { $$ = $2; }
+	| "[" dictinit "]" { $$ = $2; }
 	| "[" arrayinit error "]"
 	| "[" dictinit error "]"
 	;
 
 arrayinit	: arrayinit "," expr
-		| expr
+		| expr { $$ = $1; }
 		;
 
 dictinit	: dictinit "," T_ID ":" expr
-		| T_ID ":" expr
+		| T_ID ":" expr { $$ = $3; }
 		;
 
 boolean : "true"
