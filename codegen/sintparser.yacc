@@ -92,7 +92,7 @@ functiondef	: "function" T_ID parameters T_ENDL stmtlist "end" { $$ = CodeTreePt
 
 parameters	: %empty { $$ = CodeTreePtr(new EmptyCodeTree()); }
 		| "(" ")" { $$ = CodeTreePtr(new EmptyCodeTree()); }
-		| "(" paramdecl ")" { $$ = $2; }
+		| "(" paramdecl ")"
 		;
 
 paramdecl	: T_ID { $$ = CodeTreePtr(new FunctionParams($1)); }
@@ -174,7 +174,7 @@ factor	: "-" factor { $$ = CodeTreePtr(new UnOp("inv", $2)); }
 	| final { $$ = $1; }
 	;
 
-final	: "(" expr ")" { $$ = $2; }
+final	: "(" expr ")"
 	| boolean { $$ = $1; }
 	| T_INT { $$ = $1; }
 	| T_FLOAT { $$ = $1; }
@@ -184,8 +184,8 @@ final	: "(" expr ")" { $$ = $2; }
 	;
 
 object	: "[" "]" { $$ = CodeTreePtr(new EmptyCodeTree()); }
-	| "[" arrayinit "]" { $$ = $2; }
-	| "[" dictinit "]" { $$ = $2; }
+	| "[" arrayinit "]"
+	| "[" dictinit "]"
 	| "[" arrayinit error "]"
 	| "[" dictinit error "]"
 	;
@@ -195,7 +195,7 @@ arrayinit	: arrayinit "," expr
 		;
 
 dictinit	: dictinit "," T_ID ":" expr
-		| T_ID ":" expr { $$ = $3; }
+		| T_ID ":" expr
 		;
 
 boolean : "true"
