@@ -183,7 +183,7 @@ final	: "(" expr ")" { $$ = $2; }
 	| reference { $$ = $1; }
 	;
 
-object	: "[" "]"
+object	: "[" "]" { $$ = CodeTreePtr(new EmptyCodeTree()); }
 	| "[" arrayinit "]" { $$ = $2; }
 	| "[" dictinit "]" { $$ = $2; }
 	| "[" arrayinit error "]"
