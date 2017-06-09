@@ -117,7 +117,8 @@ whileloop	: "while" condition "do" T_ENDL stmtlist "loop"
 			| "while" condition "do" error T_ENDL stmtlist "loop"
 			;
 
-indefloop	: "iterate" T_ENDL stmtlist "loop"
+indefloop	: "iterate" T_ENDL stmtlist "loop" {$$ = $3;}
+			
 			;
 
 assignment	: lvalue "=" assignment { $$ = CodeTreePtr(new Assignment($1, $3)); }
