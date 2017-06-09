@@ -1,7 +1,10 @@
 halt # end program
 
 # adressing
-lit ADDR LITERAL # t1 = literal
+lit ADDR LITERAL # t1 = literal (string)
+liti ADDR LITERAL # t1 = literal (int)
+litf ADDR LITERAL # t1 = literal (float)
+nill ADDR # t1 = nill
 load ADDR IDENTIFIER # t1 = var
 save ADDR IDENTIFIER # var = t1
 

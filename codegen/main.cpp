@@ -3,6 +3,7 @@
 #include <string>
 #include "instr.h"
 #include "literal.h"
+#include "cdriver.h"
 
 int yyparse();
 
@@ -20,6 +21,10 @@ void onFinish(CodeTreePtr program) {
 
     std::cout << "::::: main\n";
     printTuples(std::cout, code);
+
+    std::cout << "\n=============\n\n";
+
+    outputCCode(std::cout, code);
 }
 
 int main() {
