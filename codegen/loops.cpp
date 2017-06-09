@@ -5,6 +5,7 @@
 // iterate 'stmts' loop
 tuple4_vec IndefLoop::genCode(context c){
 
+	
 	//vetor
 	std::string addr2 = genAddr();
 	context initial = context (addr2, c.break_label, c.continue_label);
@@ -25,5 +26,18 @@ tuple4_vec IndefLoop::genCode(context c){
 	tuple4 opgoto("goto",label1,"", "");
 	indefloop.push_back(opgoto);
 
+	//Label de saida de um brake
+	std::string label2 = genLabel();
+	tuple4 oplabel2("label",label2,"","");
+	indefloop.push_back(oplabel2);
+
 	return indefloop;
 }
+
+tuple4_vec WhileLoop::genCode(context c){
+	//vetor
+	std::string addr1 = genAddr();
+	context initial = context (add1,c.break_label,c.continue_label);
+	tuple4_vec whileloop;
+
+} 
