@@ -47,7 +47,7 @@ tuple4_vec if_Tree::genCode(context c){
 
     //goto
     std::string label2 = genLabel();
-    tuple4 opgoto ("goto", addr4, label2, "");
+    tuple4 opgoto ("goto", label2, "", "");
     left_v.push_back(opgoto);
 
     // label 1
@@ -63,5 +63,3 @@ tuple4_vec if_Tree::genCode(context c){
 
     return left_v;
 }
-
-

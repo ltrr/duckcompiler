@@ -15,7 +15,7 @@ tuple4_vec FunctionDef::genCode(context c) {
     auto label = genLabel();
     auto hook = genAddr();
 
-    tuple4_vec instr { tuple4 ("litf", hook, label, "") };
+    tuple4_vec instr { tuple4 ("func", hook, label, "") };
 
     context name_subcontext(hook, Mode::Save);
     tuple4_vec name_instr = this->name->genCode(name_subcontext);

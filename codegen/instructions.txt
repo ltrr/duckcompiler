@@ -5,6 +5,7 @@ lit ADDR LITERAL # t1 = literal (string)
 liti ADDR LITERAL # t1 = literal (int)
 litf ADDR LITERAL # t1 = literal (float)
 nill ADDR # t1 = nill
+func ADDR LABEL # t1 = func of label
 load ADDR IDENTIFIER # t1 = var
 save ADDR IDENTIFIER # var = t1
 
