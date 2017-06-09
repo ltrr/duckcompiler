@@ -4,6 +4,7 @@
 #include "literal.h"
 #include "statement.h"
 #include "lvalue.h"
+#include "if_else.h"
 
 int yylex();
 void yyerror(const char*);
@@ -99,13 +100,13 @@ paramdecl	: T_ID { $$ = CodeTreePtr(new FunctionParams($1)); }
 		| paramdecl "," T_ID { $$ = CodeTreePtr(new FunctionParams($3, $1)); }
 		;
 
-if	: "if" condition "then" T_ENDL stmtlist elseif
+if	: "if" condition "then" T_ENDL stmtlist elseif { $$ = CodeTreePtr(new if_Tree($2,$5,$6)); }
 	| "if" condition "then" error T_ENDL stmtlist elseif
 	;
 
-elseif	: "else" T_ENDL stmtlist "end"
-	| "else" if
-	| "end"
+elseif	: "else" T_ENDL stmtlist "end" { $$ = $3; }
+	| "else" if { $$ = $2; }
+	| "end"  { $$ = CodeTreePtr(new EmptyCodeTree()); }
 	;
 
 forloop	: "for" T_ID "=" arithmetic "to" arithmetic "do" T_ENDL stmtlist "loop"

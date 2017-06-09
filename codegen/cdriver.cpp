@@ -4,6 +4,12 @@
 #include "instr.h"
 using std::string;
 
+string prelude = R"PRELUDE(
+typedef struct {
+    int id;
+} duckobj_t;
+)PRELUDE";
+
 void dumpC(std::ostream& out, tuple4 instr) {
     out << "\t";
 
@@ -12,6 +18,9 @@ void dumpC(std::ostream& out, tuple4 instr) {
     }
     else if (instr.instr == "goto") {
         out << "goto " << instr.addr1 << ";\n";
+    }
+    else if (instr.instr == "ifgoto") {
+        out << "if (to_bool(" << instr.addr1 << ")) goto " << instr.addr2 << ";\n";
     }
     else if (instr.instr == "push") {
         out << "push(" << instr.addr1 << ");\n";
@@ -103,6 +112,8 @@ void dumpC(std::ostream& out, tuple4 instr) {
 }
 
 void outputCCode(std::ostream& out, tuple4_vec& main_program) {
+
+    out << prelude;
 
     for (auto& kv : function_defs) {
         out << "int " << kv.first << "() {\n";
