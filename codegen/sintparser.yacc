@@ -3,6 +3,7 @@
 #include "instr.h"
 #include "literal.h"
 #include "statement.h"
+#include "loops.h"
 #include "lvalue.h"
 #include "if_else.h"
 int yylex();
@@ -116,7 +117,7 @@ whileloop	: "while" condition "do" T_ENDL stmtlist "loop"
 			| "while" condition "do" error T_ENDL stmtlist "loop"
 			;
 
-indefloop	: "iterate" T_ENDL stmtlist "loop"
+indefloop	: "iterate" T_ENDL stmtlist "loop" {$$ = CodeTreePtr(new IndefLoop($3)) ;}
 			;
 
 assignment	: lvalue "=" assignment { $$ = CodeTreePtr(new Assignment($1, $3)); }
