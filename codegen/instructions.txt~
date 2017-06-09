@@ -2,7 +2,6 @@ halt # end program
 
 # adressing
 lit ADDR LITERAL # t1 = literal
-lito ADDR # t1 = []
 load ADDR IDENTIFIER # t1 = var
 save ADDR IDENTIFIER # var = t1
 
