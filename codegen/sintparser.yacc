@@ -93,7 +93,7 @@ functiondef	: "function" T_ID parameters T_ENDL stmtlist "end" { $$ = CodeTreePt
 
 parameters	: %empty { $$ = CodeTreePtr(new EmptyCodeTree()); }
 		| "(" ")" { $$ = CodeTreePtr(new EmptyCodeTree()); }
-		| "(" paramdecl ")" { $$ = $2; }
+		| "(" paramdecl ")"
 		;
 
 paramdecl	: T_ID { $$ = CodeTreePtr(new FunctionParams($1)); }
@@ -106,7 +106,7 @@ if	: "if" condition "then" T_ENDL stmtlist elseif { $$ = CodeTreePtr(new if_Tree
 
 elseif	: "else" T_ENDL stmtlist "end" { $$ = $3; }
 	| "else" if { $$ = $2; }
-	| "end"
+	| "end" { $$ = CodeTreePtr(new EmptyCodeTree()); }
 	;
 
 forloop	: "for" T_ID "=" arithmetic "to" arithmetic "do" T_ENDL stmtlist "loop"
@@ -175,16 +175,16 @@ factor	: "-" factor { $$ = CodeTreePtr(new UnOp("inv", $2)); }
 	| final { $$ = $1; }
 	;
 
-final	: "(" expr ")" { $$ = $2; }
+final	: "(" expr ")"
 	| boolean { $$ = $1; }
 	| T_INT { $$ = $1; }
 	| T_FLOAT { $$ = $1; }
 	| T_STRING { $$ = $1; }
-	| object
+	| object { $$ = $1; }
 	| reference { $$ = $1; }
 	;
 
-object	: "[" "]"
+object	: "[" "]" { $$ = CodeTreePtr(new EmptyCodeTree()); }
 	| "[" arrayinit "]"
 	| "[" dictinit "]"
 	| "[" arrayinit error "]"
@@ -192,7 +192,7 @@ object	: "[" "]"
 	;
 
 arrayinit	: arrayinit "," expr
-		| expr
+		| expr { $$ = $1; }
 		;
 
 dictinit	: dictinit "," T_ID ":" expr
