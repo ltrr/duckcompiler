@@ -7,15 +7,15 @@ class Obj : public CodeTree{
 public:
 	Obj(){
 		init = new EmptyCodeTree();
-		modo = "";
+		// modo = "";
 	}
-	Obj(CodeTreePtr init, std::string modo) : init(init), modo(modo);
+	// Obj(CodeTreePtr init, std::string modo) : init(init), modo(modo);
 
 	tuple4_vec genCode(context c);
 
 private:
 	CodeTreePtr init;	// initarray or initdict
-	std::string modo;	// "array" or "dict"
+	// std::string modo;	// "array" or "dict"
 };
 
 #endif

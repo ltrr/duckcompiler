@@ -28,6 +28,8 @@ enum class Mode { Save, Load, Lit };
 struct context {
 	std::string hook_addr, break_label, continue_label;
 	Mode mode;
+	std::string obj_addr;    // for array and dictionary initialization
+	int array_index;         //
 
 	context() : hook_addr(""), break_label(""), continue_label("") {}
 
@@ -36,6 +38,17 @@ struct context {
 
 	context(std::string hook_addr, Mode mode) :
 		hook_addr(hook_addr), mode(mode) {}
+	
+	// Dictionary init context
+	context(std::string hook_addr, std::string break_label, std::string continue_label, std::string obj_addr) :
+    	hook_addr(hook_addr), break_label(break_label), continue_label(continue_label), obj_addr(obj_addr) {}
+    
+    // Array init context
+    context(std::string hook_addr, std::string break_label, std::string continue_label, std::string obj_addr, int array_index) :
+    	hook_addr(hook_addr), break_label(break_label), continue_label(continue_label), obj_addr(obj_addr) {
+    	this->array_index  = array_index;
+    }
+
 };
 
 

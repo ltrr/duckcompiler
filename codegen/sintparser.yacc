@@ -185,18 +185,18 @@ final	: "(" expr ")"
 	;
 
 object	: "[" "]" { $$ = CodeTreePtr(new Obj()); }
-	| "[" arrayinit "]"  { $$ = CodeTreePtr(new Obj($2,"array")); }
-	| "[" dictinit "]" { $$ = CodeTreePtr(new Obj($2,"dict")); }
+	| "[" arrayinit "]"  // { $$ = CodeTreePtr(new Obj($2,"array")); }
+	| "[" dictinit "]" // { $$ = CodeTreePtr(new Obj($2,"dict")); }
 	| "[" arrayinit error "]"
 	| "[" dictinit error "]"
 	;
 
-arrayinit	: arrayinit "," expr
+arrayinit	: expr "," arrayinit
 		| expr { $$ = $1; }
 		;
 
-dictinit	: dictinit "," T_ID ":" expr
-		| T_ID ":" expr
+dictinit	: T_ID ":" expr "," dictinit { $$ = CodeTreePtr(new DictInit(new Identifier($1),$3,$5)); }
+		| T_ID ":" expr { $$ = CodeTreePtr(new DictInit(new Identifier($1),$3)); }
 		;
 
 boolean : "true"

@@ -10,7 +10,7 @@ tuple4_vec Obj::genCode(context c){
 		hook = c.hook_addr;
 	std::string addr = genAddr();
 	
-	if(modo.compare("array") == 0){
+	/* if(modo.compare("array") == 0){
 		context c_init = context(addr,c.break_label,c.continue_label);
 		tuple4_vec acode = init->genCode(c_init);
 		obcode.insert(end(obcode), begin(acode), end(acode));
@@ -19,7 +19,7 @@ tuple4_vec Obj::genCode(context c){
 		
 	} else {
 		obcode.push_back(tuple4("lito",addr,"",""));
-	}
+	} */
 	return obcode;
 }
 
