@@ -3,6 +3,7 @@
 #include "instr.h"
 #include "literal.h"
 #include "statement.h"
+#include "loops.h"
 #include "lvalue.h"
 #include "if_else.h"
 
@@ -109,15 +110,15 @@ elseif	: "else" T_ENDL stmtlist "end" { $$ = $3; }
 	| "end"  { $$ = CodeTreePtr(new EmptyCodeTree()); }
 	;
 
-forloop	: "for" T_ID "=" arithmetic "to" arithmetic "do" T_ENDL stmtlist "loop"
+forloop	: "for" T_ID "=" arithmetic "to" arithmetic "do" T_ENDL stmtlist "loop" {$$ = CodeTreePtr(new ForLoop($2,$4,$6,$9));}
 		| "for" T_ID "=" arithmetic "to" arithmetic "do" error T_ENDL stmtlist "loop"
 		;
 
-whileloop	: "while" condition "do" T_ENDL stmtlist "loop"
+whileloop	: "while" condition "do" T_ENDL stmtlist "loop" {$$ = CodeTreePtr(new WhileLoop($2,$5));}
 			| "while" condition "do" error T_ENDL stmtlist "loop"
 			;
 
-indefloop	: "iterate" T_ENDL stmtlist "loop" {$$ = $3;}
+indefloop	: "iterate" T_ENDL stmtlist "loop" {$$ = CodeTreePtr(new IndefLoop($3)) ;}
 			
 			;
 

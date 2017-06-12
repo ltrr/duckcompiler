@@ -1,27 +1,52 @@
 
 #include "instr.h"
 
-///////////////
+/////////////// Indef Loop
 class IndefLoop : public CodeTree {
+
 public:
-<<<<<<< HEAD
-	IndefLoop(CodeTreePtr midd) : midd(midd) {}
-=======
-	IndefLoop(CodeTreePtr stmt, CodeTreePtr stmt_list) : 
-		stmt(stmt), stmt_list(stmt_list) {}
->>>>>>> c602f628b3975df7a0240e8a8e0b6a8685a4dbb8
+
+	IndefLoop(CodeTreePtr midd) : 
+		midd(midd) {}
+
 
 	tuple4_vec genCode(context c);
 
 private:
-<<<<<<< HEAD
 	CodeTreePtr midd;
 
 };
 
-//////////////
-=======
-	CodeTreePtr stmt_list;
+////////////// While Loop
+class WhileLoop : public CodeTree{
+
+public:
+
+	WhileLoop(CodeTreePtr cond, CodeTreePtr stmts):
+		cond(cond), stmts(stmts) {}
+		
+		
+		tuple4_vec genCode(context c);
+
+private:
+	CodeTreePtr cond;
+	CodeTreePtr stmts;
 
 };
 
+///////////////For Loop 
+//"for" T_ID "=" arithmetic "to" arithmetic "do" T_ENDL stmtlist "loop"
+class ForLoop : public CodeTree{
+
+public:
+	ForLoop(CodeTreePtr id, CodeTreePtr art1, CodeTreePtr art2, CodeTreePtr stmts) :
+	id(id), art1(art1), art2(art2), stmts(stmts){}
+	
+	tuple4_vec genCode(context c);
+	
+private:
+	CodeTreePtr	id;
+	CodeTreePtr	art1;
+	CodeTreePtr	art2;
+	CodeTreePtr	stmts;
+};
