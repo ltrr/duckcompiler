@@ -187,9 +187,9 @@ final	: "(" expr ")"
 	| reference { $$ = $1; }
 	;
 
-object	: "[" "]" // { $$ = CodeTreePtr(new Obj()); }
-	| "[" arrayinit "]"  // { $$ = CodeTreePtr(new Obj($2,"array")); }
-	| "[" dictinit "]" // { $$ = CodeTreePtr(new Obj($2,"dict")); }
+object	: "[" "]" { $$ = CodeTreePtr(new Obj()); }
+	| "[" arrayinit "]" { $$ = CodeTreePtr(new Obj($2,"array")); }
+	| "[" dictinit "]" { $$ = CodeTreePtr(new Obj($2,"dict")); }
 	| "[" arrayinit error "]"
 	| "[" dictinit error "]"
 	;
@@ -198,8 +198,8 @@ arrayinit	: expr "," arrayinit { $$ = CodeTreePtr(new ArrayInit($1,$3)); }
 		| expr { $$ = $1; }
 		;
 
-dictinit	: T_ID ":" expr "," // dictinit { $$ = CodeTreePtr(new DictInit($1,$3,$5)); }
-		| T_ID ":" expr // { $$ = CodeTreePtr(new DictInit($1,$3)); }
+dictinit	: T_ID ":" expr "," dictinit { $$ = CodeTreePtr(new DictInit($1,$3,$5)); }
+		| T_ID ":" expr { $$ = CodeTreePtr(new DictInit($1,$3)); }
 		;
 
 boolean : "true"

@@ -9,17 +9,19 @@ tuple4_vec Obj::genCode(context c){
 	else
 		hook = c.hook_addr;
 	std::string addr = genAddr();
-	
-	/* if(modo.compare("array") == 0){
-		context c_init = context(addr,c.break_label,c.continue_label);
+	context c_init = context(addr,c.break_label,c.continue_label);
+	c_init.obj_addr = hook;
+	if(tipo.compare("array") == 0){
+		c_init.array_index = 0;
+	}
+
+	if(tipo.compare("array") != 0 && tipo.compare("dict") != 0){
+		obcode.push_back(tuple4("lito",hook,"",""));
+	} else {
 		tuple4_vec acode = init->genCode(c_init);
 		obcode.insert(end(obcode), begin(acode), end(acode));
-		//
-	} else if(modo.compare("dict") == 0){
-		
-	} else {
-		obcode.push_back(tuple4("lito",addr,"",""));
-	} */
+	}
+
 	return obcode;
 }
 
