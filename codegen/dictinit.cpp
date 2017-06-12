@@ -13,7 +13,12 @@ tuple4_vec DictInit::genCode(context c){
     std::string dict_addr = c.obj_addr;
     tuple4_vec expr_code = expr->genCode(context(expr_addr,c.break_label,c.continue_label));
     dcode.insert(end(dcode),begin(expr_code),end(expr_code));
-    dcode.push_back(tuple4("load",id_addr,t_id->name,""));  // t_id must be initialized as an Identifier
+    //
+    tuple4_vec t_id_code = t_id->genCode(context(id_addr,c.break_label,c.continue_label));
+    dcode.insert(end(dcode),begin(t_id_code),end(t_id_code));
+    //
+    // load??
+    dcode.push_back(tuple4("save",t_id->name,id_addr,""));
     dcode.push_back(tuple4("setindex",dict_addr,id_addr,expr_addr));
     if(dict_init != NULL){  // dictinit is just one (key : value) pair
         std::string dictinit_addr = genAddr();
