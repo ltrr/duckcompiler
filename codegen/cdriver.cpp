@@ -7,128 +7,555 @@
 using std::string;
 
 string prelude = R"PRELUDE(
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+
+#define DUCK_NILL 0
+#define DUCK_FUNC 1
+#define DUCK_OBJ 2
+#define DUCK_STR 3
+#define DUCK_INT 4
+#define DUCK_FLOAT 5
+
+struct duckentry_t;
+
+typedef struct duckentry_t duckentry_t;
+
 typedef struct {
-    int id;
+    duckentry_t* head;
+} duckobj_t;
+
+typedef struct {
+    int type;
+    union {
+        int ivalue;
+        float fvalue;
+        const char* svalue;
+        const char* flabel;
+        duckobj_t ovalue;
+    } value;
 } duckref_t;
 
-int to_bool(duckref_t ref) {
-    return 0;
-}
+struct duckentry_t {
+    duckref_t key;
+    duckref_t value;
+    duckentry_t *next;
+};
 
-void push(duckref_t ref) {}
 
-duckref_t pop(void) {
+//////////// constructors
+duckref_t make_nill() {
     duckref_t ref;
+    ref.type = DUCK_NILL;
     return ref;
 }
 
-void save(duckref_t ref, const char *name) {
-
+duckref_t make_func(const char* label) {
+    duckref_t ref;
+    ref.type = DUCK_FUNC;
+    ref.value.flabel = label;
+    return ref;
 }
 
-duckref_t load(const char *name) {
-
-}
-
-duckref_t getindex(duckref_t ref, duckref_t index) {
-
-}
-
-void setindex(duckref_t ref, duckref_t index, duckref_t value) {
-
+duckref_t make_obj() {
+    duckref_t ref;
+    ref.type = DUCK_OBJ;
+    ref.value.ovalue.head = malloc(sizeof(duckentry_t));
+    ref.value.ovalue.head->next = NULL;
+    return ref;
 }
 
 duckref_t make_str(const char* str) {
-
+    duckref_t ref;
+    ref.type = DUCK_STR;
+    ref.value.svalue = str;
+    return ref;
 }
 
 duckref_t make_int(int x) {
-
+    duckref_t ref;
+    ref.type = DUCK_INT;
+    ref.value.ivalue = x;
+    return ref;
 }
 
 duckref_t make_float(float x) {
-
+    duckref_t ref;
+    ref.type = DUCK_FLOAT;
+    ref.value.fvalue = x;
+    return ref;
 }
 
-duckref_t make_nill(float x) {
-
+//////////// raw equality
+int raw_eq(duckref_t ref1, duckref_t ref2) {
+    if (ref1.type != ref2.type) return 0;
+    switch (ref1.type) {
+        case DUCK_NILL:
+            return 1;
+        case DUCK_FUNC:
+            return (strcmp(ref1.value.flabel, ref2.value.flabel) == 0);
+        case DUCK_OBJ:
+            return (ref1.value.ovalue.head == ref2.value.ovalue.head);
+        case DUCK_STR:
+            return (strcmp(ref1.value.svalue, ref2.value.svalue) == 0);
+        case DUCK_INT:
+            return (ref1.value.ivalue == ref2.value.ivalue);
+        case DUCK_FLOAT:
+            return (ref1.value.fvalue == ref2.value.fvalue);
+        default:
+            return 0;
+    }
 }
 
-duckref_t make_func(const char* label) {
 
+//////////// objects
+duckentry_t* make_entry(duckref_t key, duckref_t value) {
+    duckentry_t *entry = malloc(sizeof(duckentry_t));
+    entry->key = key;
+    entry->value = value;
+    return entry;
 }
 
-duckref_t inv(duckref_t ref) {
-
+void add_entry(duckobj_t *obj, duckentry_t *entry) {
+    duckentry_t *it = obj->head;
+    while (it->next != NULL) {
+        it = it->next;
+    }
+    it->next = entry;
+    entry->next = NULL;
 }
 
-duckref_t neg(duckref_t ref) {
-
+duckref_t getobjindex(duckobj_t* obj, duckref_t index) {
+    duckentry_t *it = obj->head;
+    while (it->next != NULL) {
+        it = it->next;
+        if (raw_eq(index, it->key)) {
+            return it->value;
+        }
+    }
+    return make_nill();
 }
 
-duckref_t not(duckref_t ref) {
+void setobjindex(duckobj_t* obj, duckref_t index, duckref_t value) {
+    duckentry_t *it = obj->head;
+    while (it->next != NULL) {
+        it = it->next;
+        if (raw_eq(index, it->key)) {
+            it->value = value;
+            return;
+        }
+    }
 
+    duckentry_t *entry = make_entry(index, value);
+    add_entry(obj, entry);
 }
 
-duckref_t add(duckref_t ref1, duckref_t ref2) {
 
+//////////// variables
+int vartable_array_size = 0;
+duckobj_t* vartable_array[1024];
+
+void raise_scope(void) {
+    duckobj_t* obj = malloc(sizeof(duckobj_t));
+    obj->head = malloc(sizeof(duckentry_t));
+    obj->head->next = NULL;
+    vartable_array[vartable_array_size] = obj;
+    vartable_array_size += 1;
 }
 
-duckref_t sub(duckref_t ref1, duckref_t ref2) {
-
+void drop_scope(void) {
+    if (vartable_array_size <= 0)
+        return;
+    duckobj_t* arr = vartable_array[vartable_array_size];
+    if (arr != NULL) free(arr);
+    vartable_array_size -= 1;
 }
 
-duckref_t mul(duckref_t ref1, duckref_t ref2) {
+duckref_t load(const char *name) {
+    duckref_t name_str;
+    name_str.type = DUCK_STR;
+    name_str.value.svalue = name;
 
+    for (int i = vartable_array_size - 1; i >= 0; i--) {
+        duckref_t ref = getobjindex(vartable_array[i], name_str);
+        if (!ref.type == DUCK_NILL)
+            return ref;
+    }
+    return make_nill();
 }
 
-duckref_t div(duckref_t ref1, duckref_t ref2) {
+void save(duckref_t ref, const char *name) {
+    duckref_t name_str;
+    name_str.type = DUCK_STR;
+    name_str.value.svalue = name;
 
+    for (int i = vartable_array_size - 2; i >= 0; i--) {
+        duckref_t vref = getobjindex(vartable_array[i], name_str);
+        if (!vref.type == DUCK_NILL) {
+            setobjindex(vartable_array[i], name_str, ref);
+            return;
+        }
+    }
+    setobjindex(vartable_array[vartable_array_size-1], name_str, ref);
 }
 
-duckref_t eq(duckref_t ref1, duckref_t ref2) {
+duckref_t call_stack[1024];
+int call_stack_size = 0;
 
+void push(duckref_t ref) {
+    call_stack[call_stack_size] = ref;
+    call_stack_size += 1;
 }
 
-duckref_t neq(duckref_t ref1, duckref_t ref2) {
-
+duckref_t pop(void) {
+    if (call_stack_size == 0)
+        return make_nill();
+    call_stack_size -= 1;
+    return call_stack[call_stack_size];
 }
 
-duckref_t lt(duckref_t ref1, duckref_t ref2) {
-
+duckref_t getindex(duckref_t ref, duckref_t index) {
+    if (ref.type != DUCK_OBJ) {
+        fprintf(stderr, "cannot index: not a object\n");
+        return make_nill();
+    }
+    return getobjindex(&ref.value.ovalue, index);
 }
 
-duckref_t le(duckref_t ref1, duckref_t ref2) {
-
+void setindex(duckref_t ref, duckref_t index, duckref_t value) {
+    if (ref.type != DUCK_OBJ) {
+        fprintf(stderr, "cannot index: not a object\n");
+        return;
+    }
+    setobjindex(&ref.value.ovalue, index, value);
 }
 
-duckref_t gt(duckref_t ref1, duckref_t ref2) {
+void init(void) {
+    raise_scope();
 
+    duckref_t ducklib = make_obj();
+    duckref_t printfn = make_func("duck.print");
+    duckref_t printfn_name = make_str("print");
+    setindex(ducklib, printfn_name, printfn);
+
+    save(ducklib, "duck");
 }
 
-duckref_t ge(duckref_t ref1, duckref_t ref2) {
-
+int to_bool(duckref_t ref) {
+    switch (ref.type) {
+        case DUCK_NILL:
+            return 0;
+        case DUCK_FUNC:
+            return 1;
+        case DUCK_OBJ:
+            return 1;
+        case DUCK_STR:
+            return strlen(ref.value.svalue);
+        case DUCK_INT:
+            return ref.value.ivalue;
+        case DUCK_FLOAT:
+            return (ref.value.fvalue != 0) ? 1 : 0;
+    }
+    return 0;
 }
 
-duckref_t and(duckref_t ref1, duckref_t ref2) {
-
+duckref_t op_inv(duckref_t ref) {
+    switch (ref.type) {
+        case DUCK_INT:
+            return make_int(-ref.value.ivalue);
+        case DUCK_FLOAT:
+            return make_int(-ref.value.fvalue);
+        default:
+            return make_nill();
+    }
 }
 
-duckref_t or(duckref_t ref1, duckref_t ref2) {
-
+duckref_t op_neg(duckref_t ref) {
+    return make_nill();
 }
 
-void call(duckref_t ref) {
-
+duckref_t op_not(duckref_t ref) {
+    if (to_bool(ref))
+        return make_int(0);
+    else
+        return make_int(1);
 }
 
-void raise_scope(void) {}
+duckref_t op_add(duckref_t ref1, duckref_t ref2) {
+    switch (ref1.type) {
+        case DUCK_INT:
+            switch (ref2.type) {
+                case DUCK_INT:
+                    return make_int(ref1.value.ivalue + ref2.value.ivalue);
+                case DUCK_FLOAT:
+                    return make_float(ref1.value.ivalue + ref2.value.fvalue);
+                default:
+                    return make_nill();
+            }
+        case DUCK_FLOAT:
+            switch (ref2.type) {
+                case DUCK_INT:
+                    return make_float(ref1.value.fvalue + ref2.value.ivalue);
+                case DUCK_FLOAT:
+                    return make_float(ref1.value.fvalue + ref2.value.fvalue);
+                default:
+                    return make_nill();
+            }
+        default:
+            return make_nill();
+    }
+}
 
-void drop_scope(void) {}
+duckref_t op_sub(duckref_t ref1, duckref_t ref2) {
+    switch (ref1.type) {
+        case DUCK_INT:
+            switch (ref2.type) {
+                case DUCK_INT:
+                    return make_int(ref1.value.ivalue - ref2.value.ivalue);
+                case DUCK_FLOAT:
+                    return make_float(ref1.value.ivalue - ref2.value.fvalue);
+                default:
+                    return make_nill();
+            }
+        case DUCK_FLOAT:
+            switch (ref2.type) {
+                case DUCK_INT:
+                    return make_float(ref1.value.fvalue - ref2.value.ivalue);
+                case DUCK_FLOAT:
+                    return make_float(ref1.value.fvalue - ref2.value.fvalue);
+                default:
+                    return make_nill();
+            }
+        default:
+            return make_nill();
+    }
+}
 
-void init(void) {}
+duckref_t op_mul(duckref_t ref1, duckref_t ref2) {
+    switch (ref1.type) {
+        case DUCK_INT:
+            switch (ref2.type) {
+                case DUCK_INT:
+                    return make_int(ref1.value.ivalue * ref2.value.ivalue);
+                case DUCK_FLOAT:
+                    return make_float(ref1.value.ivalue * ref2.value.fvalue);
+                default:
+                    return make_nill();
+            }
+        case DUCK_FLOAT:
+            switch (ref2.type) {
+                case DUCK_INT:
+                    return make_float(ref1.value.fvalue * ref2.value.ivalue);
+                case DUCK_FLOAT:
+                    return make_float(ref1.value.fvalue * ref2.value.fvalue);
+                default:
+                    return make_nill();
+            }
+        default:
+            return make_nill();
+    }
+}
 
+duckref_t op_div(duckref_t ref1, duckref_t ref2) {
+    switch (ref1.type) {
+        case DUCK_INT:
+            switch (ref2.type) {
+                case DUCK_INT:
+                    return make_int(ref1.value.ivalue / ref2.value.ivalue);
+                case DUCK_FLOAT:
+                    return make_float(ref1.value.ivalue / ref2.value.fvalue);
+                default:
+                    return make_nill();
+            }
+        case DUCK_FLOAT:
+            switch (ref2.type) {
+                case DUCK_INT:
+                    return make_float(ref1.value.fvalue / ref2.value.ivalue);
+                case DUCK_FLOAT:
+                    return make_float(ref1.value.fvalue / ref2.value.fvalue);
+                default:
+                    return make_nill();
+            }
+        default:
+            return make_nill();
+    }
+}
+
+duckref_t op_eq(duckref_t ref1, duckref_t ref2) {
+    if (raw_eq(ref1, ref2))
+        return make_int(1);
+    else
+        return make_int(0);
+}
+
+duckref_t op_neq(duckref_t ref1, duckref_t ref2) {
+    if (raw_eq(ref1, ref2))
+        return make_int(0);
+    else
+        return make_int(1);
+}
+
+duckref_t op_lt(duckref_t ref1, duckref_t ref2) {
+    float v1, v2;
+    switch (ref1.type) {
+        case DUCK_INT:
+            v1 = ref1.value.ivalue;
+            break;
+        case DUCK_FLOAT:
+            v1 = ref1.value.fvalue;
+            break;
+        default:
+            return make_nill();
+    }
+    switch (ref2.type) {
+        case DUCK_INT:
+            v2 = ref2.value.ivalue;
+            break;
+        case DUCK_FLOAT:
+            v2 = ref2.value.fvalue;
+            break;
+        default:
+            return make_nill();
+    }
+    return make_int(v1 < v2 ? 1 : 0);
+}
+
+duckref_t op_le(duckref_t ref1, duckref_t ref2) {
+    float v1, v2;
+    switch (ref1.type) {
+        case DUCK_INT:
+            v1 = ref1.value.ivalue;
+            break;
+        case DUCK_FLOAT:
+            v1 = ref1.value.fvalue;
+            break;
+        default:
+            return make_nill();
+    }
+    switch (ref2.type) {
+        case DUCK_INT:
+            v2 = ref2.value.ivalue;
+            break;
+        case DUCK_FLOAT:
+            v2 = ref2.value.fvalue;
+            break;
+        default:
+            return make_nill();
+    }
+    return make_int(v1 <= v2 ? 1 : 0);
+}
+
+duckref_t op_gt(duckref_t ref1, duckref_t ref2) {
+    float v1, v2;
+    switch (ref1.type) {
+        case DUCK_INT:
+            v1 = ref1.value.ivalue;
+            break;
+        case DUCK_FLOAT:
+            v1 = ref1.value.fvalue;
+            break;
+        default:
+            return make_nill();
+    }
+    switch (ref2.type) {
+        case DUCK_INT:
+            v2 = ref2.value.ivalue;
+            break;
+        case DUCK_FLOAT:
+            v2 = ref2.value.fvalue;
+            break;
+        default:
+            return make_nill();
+    }
+    return make_int(v1 > v2 ? 1 : 0);
+}
+
+duckref_t op_ge(duckref_t ref1, duckref_t ref2) {
+    float v1, v2;
+    switch (ref1.type) {
+        case DUCK_INT:
+            v1 = ref1.value.ivalue;
+            break;
+        case DUCK_FLOAT:
+            v1 = ref1.value.fvalue;
+            break;
+        default:
+            return make_nill();
+    }
+    switch (ref2.type) {
+        case DUCK_INT:
+            v2 = ref2.value.ivalue;
+            break;
+        case DUCK_FLOAT:
+            v2 = ref2.value.fvalue;
+            break;
+        default:
+            return make_nill();
+    }
+    return make_int(v1 > v2 ? 1 : 0);
+}
+
+duckref_t op_and(duckref_t ref1, duckref_t ref2) {
+    if (to_bool(ref1))
+        return ref2;
+    else
+        return make_int(0);
+}
+
+duckref_t op_or(duckref_t ref1, duckref_t ref2) {
+    if (to_bool(ref1))
+        return make_int(1);
+    else
+        return ref2;
+}
+
+////////// ducklib
+void duckprint() {
+    duckref_t arg = pop();
+    switch (arg.type) {
+        case DUCK_NILL:
+            printf("nill\n");
+            break;
+        case DUCK_FUNC:
+            printf("<function>\n");
+            break;
+        case DUCK_OBJ:
+            printf("<object>\n");
+            break;
+        case DUCK_STR:
+            printf("%s\n", arg.value.svalue);
+            break;
+        case DUCK_INT:
+            printf("%d\n", arg.value.ivalue);
+            break;
+        case DUCK_FLOAT:
+            printf("%f\n", arg.value.fvalue);
+            break;
+    }
+}
+
+void call(duckref_t ref);
 )PRELUDE";
+
+
+string epilogue_part1 = R"EPILOGUEP1(
+void call(duckref_t ref) {
+    if (ref.type != DUCK_FUNC) {
+        fprintf(stderr, "not a function\n");
+        return;
+    }
+    const char* name = ref.value.flabel;
+    if (strcmp(name, "duck.print") == 0) {
+        duckprint();
+        return;
+    }
+)EPILOGUEP1";
+
+string epilogue_part2 = R"EPILOGUEP2(
+}
+)EPILOGUEP2";
+
 
 void dumpC(std::ostream& out, tuple4 instr) {
     out << "\t";
@@ -176,49 +603,49 @@ void dumpC(std::ostream& out, tuple4 instr) {
         out << instr.addr1 << " = make_func(\"" << instr.addr2 << "\");\n";
     }
     else if (instr.instr == "inv") {
-        out << instr.addr1 << " = inv(" << instr.addr2 << ");\n";
+        out << instr.addr1 << " = op_inv(" << instr.addr2 << ");\n";
     }
     else if (instr.instr == "neg") {
-        out << instr.addr1 << " = neg(" << instr.addr2 << ");\n";
+        out << instr.addr1 << " = op_neg(" << instr.addr2 << ");\n";
     }
     else if (instr.instr == "not") {
-        out << instr.addr1 << " = not(" << instr.addr2 << ");\n";
+        out << instr.addr1 << " = op_not(" << instr.addr2 << ");\n";
     }
     else if (instr.instr == "add") {
-        out << instr.addr1 << " = add(" << instr.addr2 << ", " << instr.addr3 << ");\n";
+        out << instr.addr1 << " = op_add(" << instr.addr2 << ", " << instr.addr3 << ");\n";
     }
     else if (instr.instr == "sub") {
-        out << instr.addr1 << " = sub(" << instr.addr2 << ", " << instr.addr3 << ");\n";
+        out << instr.addr1 << " = op_sub(" << instr.addr2 << ", " << instr.addr3 << ");\n";
     }
     else if (instr.instr == "mul") {
-        out << instr.addr1 << " = mul(" << instr.addr2 << ", " << instr.addr3 << ");\n";
+        out << instr.addr1 << " = op_mul(" << instr.addr2 << ", " << instr.addr3 << ");\n";
     }
     else if (instr.instr == "div") {
-        out << instr.addr1 << " = div(" << instr.addr2 << ", " << instr.addr3 << ");\n";
+        out << instr.addr1 << " = op_div(" << instr.addr2 << ", " << instr.addr3 << ");\n";
     }
     else if (instr.instr == "eq") {
-        out << instr.addr1 << " = eq(" << instr.addr2 << ", " << instr.addr3 << ");\n";
+        out << instr.addr1 << " = op_eq(" << instr.addr2 << ", " << instr.addr3 << ");\n";
     }
     else if (instr.instr == "neq") {
-        out << instr.addr1 << " = neq(" << instr.addr2 << ", " << instr.addr3 << ");\n";
+        out << instr.addr1 << " = op_neq(" << instr.addr2 << ", " << instr.addr3 << ");\n";
     }
     else if (instr.instr == "lt") {
-        out << instr.addr1 << " = lt(" << instr.addr2 << ", " << instr.addr3 << ");\n";
+        out << instr.addr1 << " = op_lt(" << instr.addr2 << ", " << instr.addr3 << ");\n";
     }
     else if (instr.instr == "le") {
-        out << instr.addr1 << " = le(" << instr.addr2 << ", " << instr.addr3 << ");\n";
+        out << instr.addr1 << " = op_le(" << instr.addr2 << ", " << instr.addr3 << ");\n";
     }
     else if (instr.instr == "gt") {
-        out << instr.addr1 << " = gt(" << instr.addr2 << ", " << instr.addr3 << ");\n";
+        out << instr.addr1 << " = op_gt(" << instr.addr2 << ", " << instr.addr3 << ");\n";
     }
     else if (instr.instr == "ge") {
-        out << instr.addr1 << " = ge(" << instr.addr2 << ", " << instr.addr3 << ");\n";
+        out << instr.addr1 << " = op_ge(" << instr.addr2 << ", " << instr.addr3 << ");\n";
     }
     else if (instr.instr == "and") {
-        out << instr.addr1 << " = and(" << instr.addr2 << ", " << instr.addr3 << ");\n";
+        out << instr.addr1 << " = op_and(" << instr.addr2 << ", " << instr.addr3 << ");\n";
     }
     else if (instr.instr == "or") {
-        out << instr.addr1 << " = or(" << instr.addr2 << ", " << instr.addr3 << ");\n";
+        out << instr.addr1 << " = op_or(" << instr.addr2 << ", " << instr.addr3 << ");\n";
     }
     else if (instr.instr == "call") {
         out << "call(" << instr.addr1 << ");\n";
@@ -302,5 +729,13 @@ void outputCCode(std::ostream& out, tuple4_vec& main_program) {
         dumpC(out, instr);
     }
     out << "}\n";
+
+    out << epilogue_part1;
+    for (auto& kv : function_defs) {
+        out << "\tif (strcmp(name, \"" << kv.first <<"\") == 0) {\n"
+            << "\t\t" << kv.first << "();\n"
+            << "\t}";
+    }
+    out << epilogue_part2;
 
 }

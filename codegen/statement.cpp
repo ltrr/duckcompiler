@@ -36,9 +36,6 @@ tuple4_vec FunctionDef::genCode(context c) {
 tuple4_vec FunctionParams::genCode(context c) {
 
     tuple4_vec instr;
-    if (next) {
-        instr = next->genCode(c);
-    }
 
     auto hook = genAddr();
     instr.push_back(tuple4("pop", hook, "", ""));
@@ -46,6 +43,11 @@ tuple4_vec FunctionParams::genCode(context c) {
     context ident_subcontext(hook, Mode::Save);
     tuple4_vec ident_instr = this->ident->genCode(ident_subcontext);
     instr.insert(end(instr), begin(ident_instr), end(ident_instr));
+
+    if (next) {
+        tuple4_vec next_instr = next->genCode(c);
+        instr.insert(end(instr), begin(next_instr), end(next_instr));
+    }
 
     return instr;
 }

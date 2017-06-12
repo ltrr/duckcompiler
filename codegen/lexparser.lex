@@ -258,7 +258,9 @@ void white_advance()
 
 (\"[^\"\n]*\")|(\'[^\'\n]*\') {
 	white_advance();
-	yylval = CodeTreePtr(new StringLit(yytext));
+	std::string str_quoted(yytext);
+
+	yylval = CodeTreePtr(new StringLit(str_quoted.substr(1, str_quoted.size()-2)));
 	return T_STRING;
 }
 
