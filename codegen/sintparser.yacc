@@ -3,10 +3,11 @@
 #include "instr.h"
 #include "literal.h"
 #include "statement.h"
-#include "loops.h"
+//#include "loops.h"
 #include "lvalue.h"
 #include "if_else.h"
-#include "dictinit.h"
+//#include "dictinit.h"
+#include "arrayinit.h"
 
 int yylex();
 void yyerror(const char*);
@@ -119,7 +120,7 @@ whileloop	: "while" condition "do" T_ENDL stmtlist "loop"
 			| "while" condition "do" error T_ENDL stmtlist "loop"
 			;
 
-indefloop	: "iterate" T_ENDL stmtlist "loop" {$$ = CodeTreePtr(new IndefLoop($3)) ;}
+indefloop	: "iterate" T_ENDL stmtlist "loop" // {$$ = CodeTreePtr(new IndefLoop($3)) ;}
 			;
 
 assignment	: lvalue "=" assignment { $$ = CodeTreePtr(new Assignment($1, $3)); }
@@ -193,12 +194,12 @@ object	: "[" "]" // { $$ = CodeTreePtr(new Obj()); }
 	| "[" dictinit error "]"
 	;
 
-arrayinit	: expr "," arrayinit
+arrayinit	: expr "," arrayinit { $$ = CodeTreePtr(new ArrayInit($1,$3)); }
 		| expr { $$ = $1; }
 		;
 
-dictinit	: T_ID ":" expr "," dictinit { $$ = CodeTreePtr(new DictInit($1,$3,$5)); }
-		| T_ID ":" expr { $$ = CodeTreePtr(new DictInit($1,$3)); }
+dictinit	: T_ID ":" expr "," // dictinit { $$ = CodeTreePtr(new DictInit($1,$3,$5)); }
+		| T_ID ":" expr // { $$ = CodeTreePtr(new DictInit($1,$3)); }
 		;
 
 boolean : "true"

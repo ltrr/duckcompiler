@@ -5,14 +5,14 @@
 
 class ArrayInit : public CodeTree{
 public:
-    ArrayInit(CodeTreePtr ainit, CodeTreePtr expr):
-        ainit(ainit), expr(expr) { }
-        
+    ArrayInit(CodeTreePtr expr, CodeTreePtr ainit):
+        expr(expr), ainit(ainit) { }
+    
     tuple4_vec genCode(context c);
 
 private:
-    CodeTreePtr ainit;
     CodeTreePtr expr;
+    CodeTreePtr ainit;
 };
 
 #endif
