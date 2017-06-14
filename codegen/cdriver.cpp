@@ -728,6 +728,7 @@ void outputCCode(std::ostream& out, tuple4_vec& main_program) {
     for (tuple4& instr : main_program) {
         dumpC(out, instr);
     }
+    out << "\treturn 0;\n";
     out << "}\n";
 
     out << epilogue_part1;
