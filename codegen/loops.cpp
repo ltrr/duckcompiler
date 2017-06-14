@@ -60,7 +60,7 @@ tuple4_vec WhileLoop::genCode(context c){
 	
 //NotCond
 	std::string addr2 = genAddr();
-	tuple4 condnot("not", addr1, addr2, "");
+	tuple4 condnot("not", addr2, addr1, "");
 	whileloop.push_back(condnot);
 	
 //IfGoto
@@ -130,7 +130,10 @@ tuple4_vec ForLoop::genCode(context c){
 //label do incremento vai aqui
 	forloop.push_back(oplabel3);
 //incr
-	tuple4 incr("add",addr2,addr2,"1");
+	std::string addrI = genAddr(); 
+	tuple4 liti("liti",addrI,"1","");
+	forloop.push_back(liti);
+	tuple4 incr("add",addr2,addr2,addrI);
 	forloop.push_back(incr);
 
 //Goto L1
