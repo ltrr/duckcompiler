@@ -1,6 +1,23 @@
 
 #include "instr.h"
+//BREAK
+class Break : public CodeTree {
+public:
+ 
+	Break()  {}
+	
+	tuple4_vec genCode(context c);
 
+};
+//CONTINUE 
+class Continue : public CodeTree{
+public:
+	
+	Continue () {}
+
+	tuple4_vec genCode(context c);
+	
+};
 /////////////// Indef Loop
 class IndefLoop : public CodeTree {
 

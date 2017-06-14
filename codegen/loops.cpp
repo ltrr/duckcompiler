@@ -1,30 +1,47 @@
 #include "loops.h"
 #include "instr.h"
 /////////////////////////
+//BREAK BRAKE BREIKE
+tuple4_vec Break::genCode(context c){
+	//Goto Label
+	tuple4_vec breaq;
+	tuple4 opgoto("goto",c.break_label,"","");
+	breaq.push_back(opgoto);
+	return breaq;
+}
+
+//CONTINUE
+tuple4_vec Continue::genCode(context c){
+	//Goto Label
+	tuple4_vec cont;
+	tuple4 opgoto("goto",c.continue_label, "","");
+	cont.push_back(opgoto);
+	return cont;
+}
 
 // iterate 'stmts' loop
 tuple4_vec IndefLoop::genCode(context c){
-
 	//vetor
 	std::string addr2 = genAddr();
 	context initial = context (addr2, c.break_label, c.continue_label);
-	tuple4_vec indefloop; 
-	
-	//Label 
-	std::string label1 = genLabel();
-	tuple4 oplabel1("label", label1,"","");
-	indefloop.push_back(oplabel1);
-	
+	tuple4_vec indefloop;
+	//Label de começo de loop
+	std::string labelcom = genLabel();
+	tuple4 oplabelcom("label",labelcom,"","");
+	indefloop.push_back(oplabelcom);
+	//Label de fim de loop
+	std::string labelfim = genLabel();
+	tuple4 oplabelfim("label",labelfim,"","");
 	//stmts
 	std::string addr1 = genAddr();
-	context c_midd = context(addr1, c.break_label, c.continue_label);
+	context c_midd = context(addr1, labelfim, labelcom);
 	tuple4_vec middv = midd->genCode(c_midd);
 	indefloop.insert(end(indefloop), begin(middv), end(middv));
-	
 	//Goto 
-	tuple4 opgoto("goto",label1,"", "");
+	tuple4 opgoto("goto",labelcom,"", "");
 	indefloop.push_back(opgoto);
-
+	//pusha a label
+	indefloop.push_back(oplabelfim);
 	return indefloop;
 }
 ///////////////////
