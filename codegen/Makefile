@@ -1,5 +1,5 @@
 
-SOURCES = main.cpp instr.cpp literal.cpp statement.cpp lvalue.cpp cdriver.cpp if_else.cpp
+SOURCES = main.cpp instr.cpp literal.cpp statement.cpp lvalue.cpp loops.cpp cdriver.cpp if_else.cpp
 
 duckc: $(SOURCES) lexparser.lex sintparser.yacc
 	lex -o lexparser.cpp lexparser.lex
