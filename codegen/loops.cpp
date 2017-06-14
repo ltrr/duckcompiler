@@ -70,7 +70,7 @@ tuple4_vec WhileLoop::genCode(context c){
 
 //Stmts
 	std::string addr3 = genAddr();
-	context c_midd = context(addr3, c.break_label, c.continue_label);
+	context c_midd = context(addr3, label2, label1);
 	tuple4_vec stmtv = stmts->genCode(c_midd);
 	whileloop.insert(end(whileloop), begin(stmtv), end(stmtv));
 	
@@ -118,13 +118,17 @@ tuple4_vec ForLoop::genCode(context c){
 	std::string label2 = genLabel();
 	tuple4 opifgoto("ifgoto", addr4, label2, "");
 	forloop.push_back(opifgoto);
+//Label do incremento, para o CONTINUE
+	std::string label3 = genLabel();
+	tuple4 oplabel3("label",label3,"","");
 	
 //Stmts
 	std::string addr5 = genAddr();
-	context c_stmts = context(addr5, c.break_label, c.continue_label);
+	context c_stmts = context(addr5, label2, label3);
 	tuple4_vec stmtv = stmts->genCode(c_stmts);
 	forloop.insert(end(forloop), begin(stmtv), end(stmtv));
-	
+//label do incremento vai aqui
+	forloop.push_back(oplabel3);
 //incr
 	tuple4 incr("add",addr2,addr2,"1");
 	forloop.push_back(incr);
