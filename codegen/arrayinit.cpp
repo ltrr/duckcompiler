@@ -9,12 +9,16 @@ tuple4_vec ArrayInit::genCode(context c){
     context expr_context(expr_addr, c.break_label, c.continue_label);
     tuple4_vec expr_code = expr->genCode(expr_context);
     array_code.insert(end(array_code),begin(expr_code),end(expr_code));
-    array_code.push_back(tuple4("setindex",c.obj_addr,std::to_string(c.array_index),expr_addr));
+    std::string index_addr = genAddr();
+    array_code.push_back(tuple4("liti",index_addr,std::to_string(c.array_index),""));
+    array_code.push_back(tuple4("setindex",c.obj_addr,index_addr,expr_addr));
     //
-    std::string ainit_addr = genAddr();
-    context ainit_context(ainit_addr, c.break_label, c.continue_label, c.obj_addr, c.array_index+1);
-    tuple4_vec ainit_code = ainit->genCode(ainit_context);
-    array_code.insert(end(array_code),begin(ainit_code),end(ainit_code));
+    if(ainit != NULL){
+        std::string ainit_addr = genAddr();
+        context ainit_context(ainit_addr, c.break_label, c.continue_label, c.obj_addr, c.array_index+1);
+        tuple4_vec ainit_code = ainit->genCode(ainit_context);
+        array_code.insert(end(array_code),begin(ainit_code),end(ainit_code));
+    }
     return array_code;
 }
 

@@ -6,8 +6,9 @@
 //#include "loops.h"
 #include "lvalue.h"
 #include "if_else.h"
-//#include "dictinit.h"
+#include "dictinit.h"
 #include "arrayinit.h"
+#include "object.h"
 
 int yylex();
 void yyerror(const char*);
@@ -195,7 +196,7 @@ object	: "[" "]" { $$ = CodeTreePtr(new Obj()); }
 	;
 
 arrayinit	: expr "," arrayinit { $$ = CodeTreePtr(new ArrayInit($1,$3)); }
-		| expr { $$ = $1; }
+		| expr { $$ = CodeTreePtr(new ArrayInit($1)); }
 		;
 
 dictinit	: T_ID ":" expr "," dictinit { $$ = CodeTreePtr(new DictInit($1,$3,$5)); }

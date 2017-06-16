@@ -15,9 +15,8 @@ tuple4_vec Obj::genCode(context c){
 		c_init.array_index = 0;
 	}
 
-	if(tipo.compare("array") != 0 && tipo.compare("dict") != 0){
-		obcode.push_back(tuple4("lito",hook,"",""));
-	} else {
+    obcode.push_back(tuple4("lito",hook,"",""));
+	if(tipo.compare("array") == 0 || tipo.compare("dict") == 0){
 		tuple4_vec acode = init->genCode(c_init);
 		obcode.insert(end(obcode), begin(acode), end(acode));
 	}

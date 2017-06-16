@@ -6,7 +6,7 @@
 class Obj : public CodeTree{
 public:
 	Obj() : init(new EmptyCodeTree()) { }
-	Obj(CodeTreePtr init, std::string tipo) : init(init), tipo(tipo);
+	Obj(CodeTreePtr init, std::string tipo) : init(init), tipo(tipo) { }
 
 	tuple4_vec genCode(context c);
 

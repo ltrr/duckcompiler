@@ -8,6 +8,9 @@ public:
     ArrayInit(CodeTreePtr expr, CodeTreePtr ainit):
         expr(expr), ainit(ainit) { }
     
+    ArrayInit(CodeTreePtr expr):
+        expr(expr) { this->ainit = NULL; }
+    
     tuple4_vec genCode(context c);
 
 private:
