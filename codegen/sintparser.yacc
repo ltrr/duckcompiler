@@ -185,6 +185,7 @@ final	: "(" expr ")"
 	| T_INT { $$ = $1; }
 	| T_FLOAT { $$ = $1; }
 	| T_STRING { $$ = $1; }
+	| T_NILL { $$ = $1; }
 	| object { $$ = $1; }
 	| reference { $$ = $1; }
 	;
