@@ -168,7 +168,7 @@ void drop_scope(void) {
     if (vartable_array_size <= 0)
         return;
     duckobj_t* arr = vartable_array[vartable_array_size];
-    if (arr != NULL) free(arr);
+    //if (arr != NULL) free(arr);
     vartable_array_size -= 1;
 }
 
@@ -238,7 +238,9 @@ void init(void) {
     duckref_t printfn = make_func("duck.print");
     duckref_t printfn_name = make_str("print");
     setindex(ducklib, printfn_name, printfn);
-
+    duckref_t printlnfn = make_func("duck.println");
+    duckref_t printlnfn_name = make_str("println");
+    setindex(ducklib, printlnfn_name, printlnfn);
     save(ducklib, "duck");
 }
 
@@ -518,22 +520,29 @@ void duckprint() {
             printf("nill\n");
             break;
         case DUCK_FUNC:
-            printf("<function>\n");
+            printf("<function>");
             break;
         case DUCK_OBJ:
-            printf("<object>\n");
+            printf("<object>");
             break;
         case DUCK_STR:
-            printf("%s\n", arg.value.svalue);
+            printf("%s", arg.value.svalue);
             break;
         case DUCK_INT:
-            printf("%d\n", arg.value.ivalue);
+            printf("%d", arg.value.ivalue);
             break;
         case DUCK_FLOAT:
-            printf("%f\n", arg.value.fvalue);
+            printf("%f", arg.value.fvalue);
             break;
     }
 }
+
+
+void duckprintln() {
+    duckprint();
+    printf("\n");
+}
+
 
 void call(duckref_t ref);
 )PRELUDE";
@@ -548,6 +557,10 @@ void call(duckref_t ref) {
     const char* name = ref.value.flabel;
     if (strcmp(name, "duck.print") == 0) {
         duckprint();
+        return;
+    }
+    if (strcmp(name, "duck.println") == 0) {
+        duckprintln();
         return;
     }
 )EPILOGUEP1";
