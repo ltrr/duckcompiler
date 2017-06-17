@@ -17,6 +17,7 @@ extern int line;
 extern int column;
 
 bool has_error = false;
+bool is_finished = false;
 
 #define YYSTYPE CodeTreePtr
 %}
@@ -71,7 +72,7 @@ bool has_error = false;
 
 %%
 
-program	: stmtlist	{ onFinish($1); };
+program	: stmtlist	{ if (is_finished && !has_error) onFinish($1); };
 
 stmtlist	: %empty { $$ = CodeTreePtr(new EmptyCodeTree()); }
 		| stmt stmtlist { $$ = CodeTreePtr(new StmtList($1, $2)); }

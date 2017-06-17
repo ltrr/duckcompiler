@@ -12,6 +12,9 @@
 int line = 1;	// A linha do caractere corrente
 int column = 1;	// A coluna do caractere corrente
 
+extern bool has_error;
+extern bool is_finished;
+
 void advance()
 // Adiciona o tamanho da string lida ao contador de coluna
 {
@@ -281,10 +284,12 @@ void white_advance()
 
 <<EOF>>	{
 	//return T_EOF;
+	is_finished = true;
 	return 0;
 }
 
 . {
+	has_error = true;
 	fprintf(stderr, "Erro Lexico: %s\n", yytext);
 	fprintf(stderr, "Linha %d, coluna %d\n", line, column);
 	advance();
