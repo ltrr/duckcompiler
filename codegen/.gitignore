@@ -2,3 +2,5 @@ duckc
 lexparser.cpp
 sintparser.cpp
 tokens.h
+tests/*
+!tests/*.duck

@@ -1,0 +1,24 @@
+function assert(v, msg)
+    if not v then
+        duck.print("error:")
+        duck.print(msg)
+    end
+end
+
+
+a = [1, 2, 3]
+assert(a[0] == 1, "a[0] == 1")
+assert(a[1] == 2, "a[1] == 2")
+assert(a[2] == 3, "a[2] == 3")
+assert(a[3] == nill, "a[3] == nill")
+
+a[0] = "x"
+a[1] = "y"
+a[2] = nill
+assert(a[0] == "x", "a[0] == 'x'")
+assert(a[1] == "y", "a[1] == 'y'")
+assert(a[2] == nill, "a[2] == nill")
+
+d = [ a: 1, b: 2 ]
+assert(d.a == 1, "d.a == 1")
+assert(d["b"] == 2, "d['b'] == 2")

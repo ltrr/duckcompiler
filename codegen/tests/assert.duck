@@ -1,0 +1,19 @@
+function assert(v, msg)
+    if not v then
+        duck.print("error:")
+        duck.print(msg)
+    end
+end
+
+assert(true, "true")
+assert(not false, "not false")
+assert(0 == 0, "0 == 0")
+assert(0 != 1, "0 != 1")
+assert(not 0, "not 0")
+assert(1, "1")
+assert("abc" == "abc", "string eq")
+assert("abc" != "abd", "string neq1")
+assert("abd" != "abc", "string neq2")
+assert(0.0 == 0.0, "0.0 == 0.0")
+assert(0 == 0.0, "0 == 0.0")
+assert(1 != 1.0, "0 == 1.0")
