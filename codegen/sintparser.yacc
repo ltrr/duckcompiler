@@ -6,6 +6,9 @@
 #include "loops.h"
 #include "lvalue.h"
 #include "if_else.h"
+#include "dictinit.h"
+#include "arrayinit.h"
+#include "object.h"
 
 int yylex();
 void yyerror(const char*);
@@ -77,12 +80,12 @@ stmtlist	: %empty { $$ = CodeTreePtr(new EmptyCodeTree()); }
 stmt	: "import" T_ID T_ENDL
 	| T_ENDL { $$ = CodeTreePtr(new EmptyCodeTree()); }
 	| expr T_ENDL { $$ = $1; }
-	| assignment T_ENDL
-	| functiondef T_ENDL
-	| if T_ENDL
-	| forloop T_ENDL
-	| whileloop T_ENDL
-	| indefloop T_ENDL
+	| assignment T_ENDL { $$ = $1; }
+	| functiondef T_ENDL { $$ = $1; }
+	| if T_ENDL { $$ = $1; }
+	| forloop T_ENDL { $$ = $1; }
+	| whileloop T_ENDL { $$ = $1; }
+	| indefloop T_ENDL { $$ = $1; }
 	| "return" expr T_ENDL { $$ = CodeTreePtr(new ReturnStmt($2)); }
 	| "break" T_ENDL {$$ = CodeTreePtr(new Break());}
 	| "continue" T_ENDL {$$ = CodeTreePtr(new Continue());}
@@ -107,7 +110,7 @@ if	: "if" condition "then" T_ENDL stmtlist elseif { $$ = CodeTreePtr(new if_Tree
 
 elseif	: "else" T_ENDL stmtlist "end" { $$ = $3; }
 	| "else" if { $$ = $2; }
-	| "end"  { $$ = CodeTreePtr(new EmptyCodeTree()); }
+	| "end" { $$ = CodeTreePtr(new EmptyCodeTree()); }
 	;
 
 forloop	: "for" T_ID "=" arithmetic "to" arithmetic "do" T_ENDL stmtlist "loop" {$$ = CodeTreePtr(new ForLoop($2,$4,$6,$9));}
@@ -119,7 +122,6 @@ whileloop	: "while" condition "do" T_ENDL stmtlist "loop" {$$ = CodeTreePtr(new 
 			;
 
 indefloop	: "iterate" T_ENDL stmtlist "loop" {$$ = CodeTreePtr(new IndefLoop($3)) ;}
-			
 			;
 
 assignment	: lvalue "=" assignment { $$ = CodeTreePtr(new Assignment($1, $3)); }
@@ -177,28 +179,28 @@ factor	: "-" factor { $$ = CodeTreePtr(new UnOp("inv", $2)); }
 	| final { $$ = $1; }
 	;
 
-final	: "(" expr ")" { $$ = $2; }
+final	: "(" expr ")"
 	| boolean { $$ = $1; }
 	| T_INT { $$ = $1; }
 	| T_FLOAT { $$ = $1; }
 	| T_STRING { $$ = $1; }
-	| object
+	| object { $$ = $1; }
 	| reference { $$ = $1; }
 	;
 
-object	: "[" "]"
-	| "[" arrayinit "]"
-	| "[" dictinit "]"
+object	: "[" "]" { $$ = CodeTreePtr(new Obj()); }
+	| "[" arrayinit "]" { $$ = CodeTreePtr(new Obj($2,"array")); }
+	| "[" dictinit "]" { $$ = CodeTreePtr(new Obj($2,"dict")); }
 	| "[" arrayinit error "]"
 	| "[" dictinit error "]"
 	;
 
-arrayinit	: arrayinit "," expr
-		| expr
+arrayinit	: expr "," arrayinit { $$ = CodeTreePtr(new ArrayInit($1,$3)); }
+		| expr { $$ = CodeTreePtr(new ArrayInit($1)); }
 		;
 
-dictinit	: dictinit "," T_ID ":" expr
-		| T_ID ":" expr
+dictinit	: T_ID ":" expr "," dictinit { $$ = CodeTreePtr(new DictInit($1,$3,$5)); }
+		| T_ID ":" expr { $$ = CodeTreePtr(new DictInit($1,$3)); }
 		;
 
 boolean : "true"

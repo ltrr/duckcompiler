@@ -1,0 +1,7 @@
+if true then
+    a = 2
+    a = 3
+else
+    b = 4
+end
+

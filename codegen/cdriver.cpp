@@ -596,6 +596,9 @@ void dumpC(std::ostream& out, tuple4 instr) {
     else if (instr.instr == "litf") {
         out << instr.addr1 << " = make_float(" << instr.addr2 << ");\n";
     }
+    else if (instr.instr == "lito") {
+        out << instr.addr1 << " = make_obj();\n";
+    }
     else if (instr.instr == "nill") {
         out << instr.addr1 << " = make_nill();\n";
     }

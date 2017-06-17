@@ -18,7 +18,6 @@ tuple4_vec if_Tree::genCode(context c){
     context c_left = context (addr1, c.break_label, c.continue_label);
     tuple4_vec left_v = left->genCode(c_left);
 
-
     //stmtlist
     std:: string addr2 = genAddr();
     context c_midd = context (addr2, c.break_label, c.continue_label);
@@ -29,8 +28,6 @@ tuple4_vec if_Tree::genCode(context c){
     std:: string addr3 = genAddr();
     context c_right = context (addr3, c.break_label, c.continue_label);
     tuple4_vec right_v = right->genCode(c_right);
-
-
 
     // not condition
     std::string addr4 = genAddr();

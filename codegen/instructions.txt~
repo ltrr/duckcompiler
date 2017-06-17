@@ -1,12 +1,7 @@
 halt # end program
 
 # adressing
-lit ADDR LITERAL # t1 = literal (string)
-liti ADDR LITERAL # t1 = literal (int)
-litf ADDR LITERAL # t1 = literal (float)
-lito ADDR # t1 = []
-nill ADDR # t1 = nill
-func ADDR LABEL # t1 = func of label
+lit ADDR LITERAL # t1 = literal
 load ADDR IDENTIFIER # t1 = var
 save ADDR IDENTIFIER # var = t1
 

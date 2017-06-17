@@ -150,6 +150,5 @@ tuple4_vec ForLoop::genCode(context c){
 	tuple4 oplabel2("label",label2, "","");
 	forloop.push_back(oplabel2);
 
-
 	return forloop;
 }
