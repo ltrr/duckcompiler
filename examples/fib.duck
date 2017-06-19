@@ -1,0 +1,20 @@
+function givfibuntil(a)
+	i = 3
+	dic = [fib1:0 ,fib2:1]
+	duck.println(dic.fib1)
+	duck.println(dic.fib2)
+	iterate
+	 fibn = dic.fib1 + dic.fib2
+	 dic.fib1 = dic.fib2
+	 dic.fib2 = fibn
+	 duck.println(fibn)	 
+	 if i == a then
+	 	break
+	 end
+	i = i + 1
+	loop
+
+end	
+
+duck.println("Fiboducki")
+givfibuntil(6)
