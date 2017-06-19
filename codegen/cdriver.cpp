@@ -89,7 +89,9 @@ duckref_t make_float(float x) {
 
 //////////// raw equality
 int raw_eq(duckref_t ref1, duckref_t ref2) {
-    if (ref1.type != ref2.type) return 0;
+    if (ref1.type == ref2.type) goto endif_raweq;
+    return 0;
+    endif_raweq:
     switch (ref1.type) {
         case DUCK_NILL:
             return 1;
@@ -119,35 +121,44 @@ duckentry_t* make_entry(duckref_t key, duckref_t value) {
 
 void add_entry(duckobj_t *obj, duckentry_t *entry) {
     duckentry_t *it = obj->head;
-    while (it->next != NULL) {
-        it = it->next;
-    }
+    startwhile_add_entry:
+    if (it->next == NULL) goto endwhile_add_entry;
+    it = it->next;
+    goto startwhile_add_entry;
+    endwhile_add_entry:
     it->next = entry;
     entry->next = NULL;
 }
 
 duckref_t getobjindex(duckobj_t* obj, duckref_t index) {
     duckentry_t *it = obj->head;
-    while (it->next != NULL) {
-        it = it->next;
-        if (raw_eq(index, it->key)) {
-            return it->value;
-        }
-    }
+
+    startwhile_getobjindex:
+    if (it->next == NULL) goto endwhile_getobjindex;
+    it = it->next;
+    if (!raw_eq(index, it->key)) goto endif_getobjindex;
+    return it->value;
+    endif_getobjindex:
+    goto startwhile_getobjindex;
+    endwhile_getobjindex:
+
     return make_nill();
 }
 
 void setobjindex(duckobj_t* obj, duckref_t index, duckref_t value) {
     duckentry_t *it = obj->head;
-    while (it->next != NULL) {
-        it = it->next;
-        if (raw_eq(index, it->key)) {
-            it->value = value;
-            return;
-        }
-    }
 
-    duckentry_t *entry = make_entry(index, value);
+    startwhile_setobjindex:
+    if (it->next == NULL) goto endwhile_setobjindex;
+    it = it->next;
+    if (!raw_eq(index, it->key)) goto endif_setobjindex;
+    it->value = value;
+    return;
+    endif_setobjindex:
+    goto startwhile_setobjindex;
+    duckentry_t *entry;
+    endwhile_setobjindex:
+    entry = make_entry(index, value);
     add_entry(obj, entry);
 }
 
@@ -178,17 +189,11 @@ duckref_t load(const char *name) {
     name_str.value.svalue = name;
 
     duckref_t ref = getobjindex(vartable_array[vartable_array_size-1], name_str);
-    if (!ref.type == DUCK_NILL)
-        return ref;
+    if (ref.type == DUCK_NILL) goto load_endif;
+    return ref;
+    load_endif:
     return getobjindex(vartable_array[0], name_str);
 
-    /*
-    for (int i = vartable_array_size - 1; i >= 0; i--) {
-        duckref_t ref = getobjindex(vartable_array[i], name_str);
-        if (!ref.type == DUCK_NILL)
-            return ref;
-    }*/
-    // return make_nill();
 }
 
 void save(duckref_t ref, const char *name) {
@@ -197,18 +202,11 @@ void save(duckref_t ref, const char *name) {
     name_str.value.svalue = name;
 
     duckref_t vref = getobjindex(vartable_array[0], name_str);
-    if (!vref.type == DUCK_NILL) {
-        setobjindex(vartable_array[0], name_str, ref);
-        return;
-    }
-    /*
-    for (int i = vartable_array_size - 2; i >= 0; i--) {
-        duckref_t vref = getobjindex(vartable_array[i], name_str);
-        if (!vref.type == DUCK_NILL) {
-            setobjindex(vartable_array[i], name_str, ref);
-            return;
-        }
-    }*/
+
+    if (vref.type == DUCK_NILL) goto save_endif;
+    setobjindex(vartable_array[0], name_str, ref);
+    return;
+    save_endif:
     setobjindex(vartable_array[vartable_array_size-1], name_str, ref);
 }
 
@@ -221,25 +219,26 @@ void push(duckref_t ref) {
 }
 
 duckref_t pop(void) {
-    if (call_stack_size == 0)
-        return make_nill();
+    if (call_stack_size != 0) goto endif_pop;
+    return make_nill();
+    endif_pop:
     call_stack_size -= 1;
     return call_stack[call_stack_size];
 }
 
 duckref_t getindex(duckref_t ref, duckref_t index) {
-    if (ref.type != DUCK_OBJ) {
-        fprintf(stderr, "cannot index: not a object\n");
-        return make_nill();
-    }
+    if (ref.type == DUCK_OBJ) goto endif_getindex;
+    fprintf(stderr, "cannot index: not a object\n");
+    return make_nill();
+    endif_getindex:
     return getobjindex(&ref.value.ovalue, index);
 }
 
 void setindex(duckref_t ref, duckref_t index, duckref_t value) {
-    if (ref.type != DUCK_OBJ) {
-        fprintf(stderr, "cannot index: not a object\n");
-        return;
-    }
+    if (ref.type == DUCK_OBJ) goto endif_setindex;
+    fprintf(stderr, "cannot index: not a object\n");
+    return;
+    endif_setindex:
     setobjindex(&ref.value.ovalue, index, value);
 }
 
@@ -290,10 +289,10 @@ duckref_t op_neg(duckref_t ref) {
 }
 
 duckref_t op_not(duckref_t ref) {
-    if (to_bool(ref))
-        return make_int(0);
-    else
-        return make_int(1);
+    if (!to_bool(ref)) goto endif_op_not;
+    return make_int(0);
+    endif_op_not:
+    return make_int(1);
 }
 
 duckref_t op_add(duckref_t ref1, duckref_t ref2) {
@@ -397,17 +396,17 @@ duckref_t op_div(duckref_t ref1, duckref_t ref2) {
 }
 
 duckref_t op_eq(duckref_t ref1, duckref_t ref2) {
-    if (raw_eq(ref1, ref2))
-        return make_int(1);
-    else
-        return make_int(0);
+    if (raw_eq(ref1, ref2)) goto op_eq_endif;
+    return make_int(0);
+    op_eq_endif:
+    return make_int(1);
 }
 
 duckref_t op_neq(duckref_t ref1, duckref_t ref2) {
-    if (raw_eq(ref1, ref2))
-        return make_int(0);
-    else
-        return make_int(1);
+    if (raw_eq(ref1, ref2)) goto op_eq_endif;
+    return make_int(1);
+    op_eq_endif:
+    return make_int(0);
 }
 
 duckref_t op_lt(duckref_t ref1, duckref_t ref2) {
@@ -511,17 +510,18 @@ duckref_t op_ge(duckref_t ref1, duckref_t ref2) {
 }
 
 duckref_t op_and(duckref_t ref1, duckref_t ref2) {
-    if (to_bool(ref1))
-        return ref2;
-    else
-        return make_int(0);
+
+    if (!to_bool(ref1)) goto endif_op_and;
+    return ref2;
+    endif_op_and:
+    return make_int(0);
 }
 
 duckref_t op_or(duckref_t ref1, duckref_t ref2) {
-    if (to_bool(ref1))
-        return make_int(1);
-    else
-        return ref2;
+    if (!to_bool(ref1)) goto endif_op_or;
+    return make_int(1);
+    endif_op_or:
+    return ref2;
 }
 
 ////////// ducklib
