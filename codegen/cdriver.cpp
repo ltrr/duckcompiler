@@ -177,12 +177,18 @@ duckref_t load(const char *name) {
     name_str.type = DUCK_STR;
     name_str.value.svalue = name;
 
+    duckref_t ref = getobjindex(vartable_array[vartable_array_size-1], name_str);
+    if (!ref.type == DUCK_NILL)
+        return ref;
+    return getobjindex(vartable_array[0], name_str);
+
+    /*
     for (int i = vartable_array_size - 1; i >= 0; i--) {
         duckref_t ref = getobjindex(vartable_array[i], name_str);
         if (!ref.type == DUCK_NILL)
             return ref;
-    }
-    return make_nill();
+    }*/
+    // return make_nill();
 }
 
 void save(duckref_t ref, const char *name) {
@@ -190,13 +196,19 @@ void save(duckref_t ref, const char *name) {
     name_str.type = DUCK_STR;
     name_str.value.svalue = name;
 
+    duckref_t vref = getobjindex(vartable_array[0], name_str);
+    if (!vref.type == DUCK_NILL) {
+        setobjindex(vartable_array[0], name_str, ref);
+        return;
+    }
+    /*
     for (int i = vartable_array_size - 2; i >= 0; i--) {
         duckref_t vref = getobjindex(vartable_array[i], name_str);
         if (!vref.type == DUCK_NILL) {
             setobjindex(vartable_array[i], name_str, ref);
             return;
         }
-    }
+    }*/
     setobjindex(vartable_array[vartable_array_size-1], name_str, ref);
 }
 
@@ -517,7 +529,7 @@ void duckprint() {
     duckref_t arg = pop();
     switch (arg.type) {
         case DUCK_NILL:
-            printf("nill\n");
+            printf("nill");
             break;
         case DUCK_FUNC:
             printf("<function>");
@@ -667,7 +679,7 @@ void dumpC(std::ostream& out, tuple4 instr) {
         out << "call(" << instr.addr1 << ");\n";
     }
     else if (instr.instr == "return") {
-        out << "return 0;\n";
+        out << "drop_scope(); return 0;\n";
     }
     else {
         out << "...;\n";

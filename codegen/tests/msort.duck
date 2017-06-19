@@ -1,0 +1,74 @@
+function size(v)
+    i = 0
+    while v[i] != nill do
+        i = i + 1
+    loop
+    return i
+end
+
+function printv(v)
+    duck.print("[")
+    for i = 0 to size(v)-1 do
+        duck.print(" ")
+        duck.print(v[i])
+        duck.print(",")
+    loop
+    duck.print(" ]")
+end
+
+function merge(v1, v2)
+    v3 = []
+    i = 0
+    j = 0
+    k = 0
+    while v1[i] != nill and v2[j] != nill do
+        if v1[i] <= v2[j] then
+            v3[k] = v1[i]
+            i = i + 1
+        else
+            v3[k] = v2[j]
+            j = j + 1
+        end
+        k = k + 1
+    loop
+    while v1[i] != nill do
+        v3[k] = v1[i]
+        i = i + 1
+        k = k + 1
+    loop
+    while v2[j] != nill do
+        v3[k] = v2[j]
+        j = j + 1
+        k = k + 1
+    loop
+return v3
+end
+
+function getsublist(v,l,r)
+    vr = []
+    for i = l to r do
+        vr[i-l] = v[i]
+    loop
+    return vr
+end
+
+function mergesort(v)
+    n = size(v)
+    if n <= 1 then
+        return v
+    else
+        h = n/2
+		L1 = mergesort(getsublist(v,0,h-1))
+		L2 = mergesort(getsublist(v,h,n-1))
+        L3 = merge(L1, L2)
+        return L3
+    end
+end
+
+L = [6,0,1,5,7,2,4,3]
+printv(L)
+duck.println("")
+
+W = mergesort(L)
+printv(W)
+duck.println("")
