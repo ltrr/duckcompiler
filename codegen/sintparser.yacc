@@ -180,7 +180,7 @@ factor	: "-" factor { $$ = CodeTreePtr(new UnOp("inv", $2)); }
 	| final { $$ = $1; }
 	;
 
-final	: "(" expr ")"
+final	: "(" expr ")" {$$ = $2;}
 	| boolean { $$ = $1; }
 	| T_INT { $$ = $1; }
 	| T_FLOAT { $$ = $1; }
